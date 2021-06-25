@@ -54,3 +54,17 @@ description:
 **example to send data periodically**:
 \`\`\`--set --data price,market-cap --period hourly\`\`\`  
 `;
+/**
+ *  consensus state message
+ */
+export const consensusStateMessage=(height:number,round:number,step:number,proposer:string,voting_power:number):string=>{
+  return `
+  **Consensus State**
+
+  **Height**: ${height}
+  **Round**: ${round}
+  **Step**: ${step}
+  **Proposer**: ${proposer}
+  **Voting Power**: ${voting_power}
+  `
+}
