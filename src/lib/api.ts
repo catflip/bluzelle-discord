@@ -19,6 +19,7 @@ export class Api {
    *  get it from console in here https://bigdipper.testnet.private.bluzelle.com/ by console.log(Meteor.settings.public.bech32PrefixConsAddr)
    */
   private bech32PrefixConsAddr: string;
+  //http://sandbox.sentry.net.bluzelle.com/ mainnet
   constructor(
     url: string = "client.sentry.testnet.private.bluzelle.com",
     apiPort: number = 1317,
@@ -146,6 +147,22 @@ export class Api {
    *  method to get latest block height
    */
   public async getLatestBlockHeight(){
+    let url = `https://${this.url}:${
+      this.rpcPort
+    }/status`;
+        try{
+            let response = await axios.get(url);
+            let status = response.data;
+            return new Intl.NumberFormat('en-US').format(status.result.sync_info.latest_block_height);
+        }
+        catch (e){
+            return 0;
+        }
+  }
+  /**
+   *  method to get block time
+   */
+   public async getBlockTime(){
     let url = `https://${this.url}:${
       this.rpcPort
     }/status`;
