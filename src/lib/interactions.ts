@@ -46,3 +46,24 @@ export async function totalBlocks(api:Api) {
     };
     return embed
 }
+export async function averageBlockTime(api:Api) {
+  const blockTimes = await api.getAverageBlockTime();
+      const embed = {
+        color: 0x0099ff,
+        title: "Bluzelle bot",
+        url: "https://bluzelle.com/",
+        thumbnail: {
+          url: "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
+        },
+        fields: [
+          {
+            name: "Average Block Time (All)",
+            value: `${blockTimes} second`,
+          },
+        ],
+
+        timestamp: new Date(),
+      };
+      return embed;
+  
+}
