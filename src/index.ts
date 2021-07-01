@@ -35,6 +35,21 @@ const commandList = [
     name: "block-times",
     description: "average block times",
   },
+  {
+    name: "set",
+    description: "send data periodically to channel",
+    options: [
+      {
+          "name": "data",
+          "description": "Get or edit permissions for a user",
+          "type": 2 // 2 is type SUB_COMMAND_GROUP
+      }
+  ]
+  },
+  {
+    name: "stop",
+    description: "stop sending data periodically to channel",
+  },
 ];
 client.once("ready", async () => {
   console.log("Ready!");
@@ -113,6 +128,26 @@ client.on("interaction", async (interaction) => {
         timestamp: new Date(),
       };
       await interaction.reply({ embeds: [embedTotalBlock] });
+      break;
+      case "block-times":
+      const blockTimes = await api.getAverageBlockTime();
+      const embedBlockTimes = {
+        color: 0x0099ff,
+        title: "Bluzelle bot",
+        url: "https://bluzelle.com/",
+        thumbnail: {
+          url: "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
+        },
+        fields: [
+          {
+            name: "Average Block Time (All)",
+            value: `${blockTimes} second`,
+          },
+        ],
+
+        timestamp: new Date(),
+      };
+      await interaction.reply({ embeds: [embedBlockTimes] });
       break;
     case "help":
       const embed = {

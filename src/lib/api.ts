@@ -1,4 +1,5 @@
 import axios from "axios";
+import { appendFile } from "fs";
 /**
  *  Connect with the bluzelle network API and RPC to get the data
  */
@@ -162,17 +163,23 @@ export class Api {
   /**
    *  method to get block time
    */
-   public async getBlockTime(){
-    let url = `https://${this.url}:${
-      this.rpcPort
-    }/status`;
-        try{
-            let response = await axios.get(url);
-            let status = response.data;
-            return new Intl.NumberFormat('en-US').format(status.result.sync_info.latest_block_height);
-        }
-        catch (e){
-            return 0;
-        }
+   public async getAverageBlockTime(){
+    const rpcUrl=`https://${this.url}:${this.rpcPort}/status`;
+    const rpcData=await axios.get(rpcUrl)
+    const latestBlockHeight=rpcData.data.result.sync_info.latest_block_height;
+    const latestBlockTime=rpcData.data.result.sync_info.latest_block_time;
+    const earliestBlockTime=rpcData.data.result.sync_info.earliest_block_time;
+    const apiUrl=`https://${this.url}:${this.apiPort}/blocks/${Number(latestBlockHeight)-1}`;
+     const apiData=await axios.get(apiUrl)
+     const lastTime=apiData.data.block.time
+    let dateLatest = new Date(latestBlockTime);
+    let dateLast = new Date(lastTime);
+    let genesisTime = new Date(earliestBlockTime);
+    
+    
+    let timeDiff = Math.abs(dateLatest.getTime() - dateLast.getTime());
+    let blockTime = (dateLatest.getTime() - genesisTime.getTime()) / Number(latestBlockHeight);
+    return (blockTime/1000).toFixed(2);
   }
+    
 }
