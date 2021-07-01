@@ -41,8 +41,23 @@ const commandList = [
     options: [
       {
           "name": "data",
-          "description": "Get or edit permissions for a user",
-          "type": 2 // 2 is type SUB_COMMAND_GROUP
+          "description": "the data that you want to send periodically to this channel",
+          "type": 3,
+          required: true,
+          choices: [
+            {
+              name: 'total-validator',
+              value: 'total-validator',
+            },
+            {
+              name: 'total-blocks',
+              value: 'total-blocks',
+            },
+            {
+              name: 'block-times',
+              value: 'block-times',
+            }
+          ],
       }
   ]
   },
@@ -51,6 +66,7 @@ const commandList = [
     description: "stop sending data periodically to channel",
   },
 ];
+let periodic=new Map();
 client.once("ready", async () => {
   console.log("Ready!");
   if (!client.application?.owner) {
@@ -82,8 +98,19 @@ client.on("message", async (message: Message) => {
 });
 client.on("interaction", async (interaction) => {
   if (!interaction.isCommand()) return;
+
   const api = new Api();
+  
   switch (interaction.commandName) {
+   
+    case "set":
+      const dataPeriod=interaction.options.get("data").value
+      const dataSecond=interaction.options.get("second").value
+      console.log(dataPeriod)
+      console.log(interaction)
+      periodic.set(interaction.guildID,{channel_id:interaction.channelID,period:setInterval(()=>)})
+      await interaction.reply({ content:"s" });
+      break;
     case "total-validator":
       const totalValidator = await api.getValidator();
       const embedTotal = {
