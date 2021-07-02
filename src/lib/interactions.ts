@@ -1,12 +1,14 @@
+import { Client, MessageActionRow, MessageButton, TextChannel } from "discord.js";
+import { captureRejectionSymbol } from "events";
 import { Api } from "./api";
 export async function totalValidator(api:Api){
     const totalValidator = await api.getValidator();
     const embed = {
       color: 0x0099ff,
-      title: "Bluzelle bot",
-      url: "https://bluzelle.com/",
-      thumbnail: {
-        url: "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
+      author: {
+        name: 'Bluzelle bot',
+        icon_url: 'https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg',
+        url: 'https://bluzelle.com/',
       },
       fields: [
         {
@@ -30,10 +32,10 @@ export async function totalBlocks(api:Api) {
     const totalBlock = await api.getLatestBlockHeight();
     const embed = {
       color: 0x0099ff,
-      title: "Bluzelle bot",
-      url: "https://bluzelle.com/",
-      thumbnail: {
-        url: "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
+      author: {
+        name: 'Bluzelle bot',
+        icon_url: 'https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg',
+        url: 'https://bluzelle.com/',
       },
       fields: [
         {
@@ -50,10 +52,10 @@ export async function averageBlockTime(api:Api) {
   const blockTimes = await api.getAverageBlockTime();
       const embed = {
         color: 0x0099ff,
-        title: "Bluzelle bot",
-        url: "https://bluzelle.com/",
-        thumbnail: {
-          url: "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
+        author: {
+          name: 'Bluzelle bot',
+          icon_url: 'https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg',
+          url: 'https://bluzelle.com/',
         },
         fields: [
           {
@@ -65,5 +67,63 @@ export async function averageBlockTime(api:Api) {
         timestamp: new Date(),
       };
       return embed;
+  
+}
+
+export const helpMessage={
+  embed :{
+    color: 0x0099ff,
+      description: `A bot that is able to push updates to the Bluzelle Discord channel, reporting relevant statistics gathered from configured networks.
+it can report stats from bluzelle testnet and mainnet. Stats reported might include things like # of validators, # of blocks, block times, etc.`,
+    author: {
+      name: 'Bluzelle bot',
+      icon_url: 'https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg',
+      url: 'https://bluzelle.com/',
+    },
+    fields: [
+      {
+        name: "Command list",
+        value: "list of command that can be used :",
+      },
+      {
+        name: "!deploy",
+        value:
+          "the first time you get this bot as an admin you must issue this command to deploy the slash command",
+      },
+      {
+        name: "/help",
+        value: "to get list of command",
+      },
+      {
+        name: "/total-validator",
+        value: "total number of validator",
+      },
+      {
+        name: "/total-block",
+        value: "total number of block",
+      },
+      {
+        name: "/block-times",
+        value: "average block times",
+      },
+    ],
+
+    timestamp: new Date(),
+  },
+  row : new MessageActionRow().addComponents(
+    new MessageButton()
+      .setLabel("INVITE")
+      .setStyle("LINK")
+      .setURL("https://google.com"),
+    new MessageButton()
+      .setLabel("COMMAND LIST")
+      .setStyle("LINK")
+      .setURL("https://google.com")
+  )
+  
+}
+
+export async function sendEmbed(client:Client,channelID:`${bigint}`,embed){
+  const panda = (client.channels.cache.get(channelID) as TextChannel).send("s")
   
 }

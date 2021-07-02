@@ -12,6 +12,8 @@ import {
 } from "discord.js";
 import {
   averageBlockTime,
+  helpMessage,
+  sendEmbed,
   totalBlocks,
   totalValidator
 } from "./lib/interactions";
@@ -105,10 +107,8 @@ client.on("interaction", async (interaction) => {
    
     case "set":
       const dataPeriod=interaction.options.get("data").value
-      const dataSecond=interaction.options.get("second").value
-      console.log(dataPeriod)
-      console.log(interaction)
-      // periodic.set(interaction.guildID,{channel_id:interaction.channelID,period:setInterval(()=>)})
+      // const dataSecond=interaction.options.get("second").value
+      periodic.set(interaction.guildID,{channel_id:interaction.channelID,period:setInterval(async()=>sendEmbed(client,interaction.channelID,(await totalValidator(api))),5000)})
       await interaction.reply({ content:"s" });
       break;
     case "total-validator":
@@ -122,56 +122,7 @@ client.on("interaction", async (interaction) => {
       await interaction.reply({ embeds: [(await averageBlockTime(api))] });
       break;
     case "help":
-      const embed = {
-        color: 0x0099ff,
-        title: "Bluzelle bot",
-        url: "https://bluzelle.com/",
-        description: `A bot that is able to push updates to the Bluzelle Discord channel, reporting relevant statistics gathered from configured networks.
-    it can report stats from bluzelle testnet and mainnet. Stats reported might include things like # of validators, # of blocks, block times, etc.`,
-        thumbnail: {
-          url: "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
-        },
-        fields: [
-          {
-            name: "Command list",
-            value: "list of command that can be used :",
-          },
-          {
-            name: "!deploy",
-            value:
-              "the first time you get this bot as an admin you must issue this command to deploy the slash command",
-          },
-          {
-            name: "/help",
-            value: "to get list of command",
-          },
-          {
-            name: "/total-validator",
-            value: "total number of validator",
-          },
-          {
-            name: "/total-block",
-            value: "total number of block",
-          },
-          {
-            name: "/block-times",
-            value: "average block times",
-          },
-        ],
-
-        timestamp: new Date(),
-      };
-      const row = new MessageActionRow().addComponents(
-        new MessageButton()
-          .setLabel("INVITE")
-          .setStyle("LINK")
-          .setURL("https://google.com"),
-        new MessageButton()
-          .setLabel("COMMAND LIST")
-          .setStyle("LINK")
-          .setURL("https://google.com")
-      );
-      await interaction.reply({ embeds: [embed], components: [row] });
+      await interaction.reply({ embeds: [helpMessage.embed], components: [helpMessage.row] });
       break;
   }
 });
