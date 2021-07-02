@@ -1,4 +1,4 @@
-import { Client, MessageActionRow, MessageButton, TextChannel } from "discord.js";
+import { Client, CommandInteraction, MessageActionRow, MessageButton, TextChannel } from "discord.js";
 import { captureRejectionSymbol } from "events";
 import { Api } from "./api";
 export async function totalValidator(api:Api){
@@ -123,7 +123,20 @@ it can report stats from bluzelle testnet and mainnet. Stats reported might incl
   
 }
 
-export async function sendEmbed(client:Client,channelID:`${bigint}`,embed){
-  const panda = (client.channels.cache.get(channelID) as TextChannel).send("s")
-  
+async function sendEmbed(client:Client,channelID:`${bigint}`,embed){
+  (client.channels.cache.get(channelID) as TextChannel).send(embed)  
+}
+function scheduling(client:Client,interaction:CommandInteraction,api:Api,milisecond:number,embed){
+  return setInterval(async()=>sendEmbed(client,interaction.channelID,embed),milisecond)
+}
+
+export function setScheduling(periodList:Map<string,any>,dataSwitch:string|number|boolean){
+switch(dataSwitch){
+  case "total-validator":
+    break;
+    case "total-blocks":
+    break;
+    case "block-times":
+    break;
+}
 }

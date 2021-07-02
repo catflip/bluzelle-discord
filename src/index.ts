@@ -3,17 +3,12 @@ import * as dotenv from "dotenv";
 dotenv.config({ path: `${__dirname}/.env.local` });
 import {
   Client,
-  Message,
-  MessageEmbed,
-  ClientApplication,
-  MessageActionRow,
-  MessageButton,
-  MessageSelectMenu,
+  Message
 } from "discord.js";
 import {
   averageBlockTime,
   helpMessage,
-  sendEmbed,
+  setScheduling,
   totalBlocks,
   totalValidator
 } from "./lib/interactions";
@@ -106,9 +101,9 @@ client.on("interaction", async (interaction) => {
   switch (interaction.commandName) {
    
     case "set":
-      const dataPeriod=interaction.options.get("data").value
-      // const dataSecond=interaction.options.get("second").value
-      periodic.set(interaction.guildID,{channel_id:interaction.channelID,period:setInterval(async()=>sendEmbed(client,interaction.channelID,(await totalValidator(api))),5000)})
+      const dataSwitch=interaction.options.get("data").value
+     setScheduling(periodic,dataSwitch)
+      
       await interaction.reply({ content:"s" });
       break;
     case "total-validator":
