@@ -1,16 +1,14 @@
 import * as dotenv from "dotenv";
 // @ts-ignore
 dotenv.config({ path: `${__dirname}/.env.local` });
-import {
-  Client,
-  Message
-} from "discord.js";
+import { Client, Message } from "discord.js";
 import {
   averageBlockTime,
   helpMessage,
   setScheduling,
+  stopScheduling,
   totalBlocks,
-  totalValidator
+  totalValidator,
 } from "./lib/interactions";
 import { Api } from "./lib/api";
 
@@ -37,57 +35,80 @@ const commandList = [
     description: "send data periodically to channel",
     options: [
       {
-          "name": "data",
-          "description": "the data that you want to send periodically to this channel",
-          "type": 3,
-          required: true,
-          choices: [
-            {
-              name: 'total-validator',
-              value: 'total-validator',
-            },
-            {
-              name: 'total-blocks',
-              value: 'total-blocks',
-            },
-            {
-              name: 'block-times',
-              value: 'block-times',
-            }
-          ],
-      },
-      {
-        "name": "time",
-        "description": "what time should the data be sent",
-        "type": 3,
+        name: "data",
+        description:
+          "the data that you want to send periodically to this channel",
+        type: 3,
         required: true,
         choices: [
           {
-            name: 'daily',
-            value: 'daily',
+            name: "total-validator",
+            value: "total-validator",
           },
           {
-            name: 'hourly',
-            value: 'hourly',
+            name: "total-blocks",
+            value: "total-blocks",
           },
           {
-            name: 'minutely',
-            value: 'minutely',
+            name: "block-times",
+            value: "block-times",
           },
-          {
-            name: 'secondly',
-            value: 'secondly',
-          }
         ],
-    }
-  ]
+      },
+      {
+        name: "time",
+        description: "what time should the data be sent",
+        type: 3,
+        required: true,
+        choices: [
+          {
+            name: "daily",
+            value: "daily",
+          },
+          {
+            name: "hourly",
+            value: "hourly",
+          },
+          {
+            name: "minutely",
+            value: "minutely",
+          },
+          {
+            name: "secondly",
+            value: "secondly",
+          },
+        ],
+      },
+    ],
   },
   {
     name: "stop",
-    description: "stop sending data periodically to channel",
+    description: "stop sending data periodically to a channel",
+    options: [
+      {
+        name: "data",
+        description:
+          "the data that you want to send periodically to this channel",
+        type: 3,
+        choices: [
+          {
+            name: "total-validator",
+            value: "total-validator",
+          },
+          {
+            name: "total-blocks",
+            value: "total-blocks",
+          },
+          {
+            name: "block-times",
+            value: "block-times",
+          },
+        ],
+      },
+    ],
   },
 ];
-let periodic=new Map();
+let periodic = new Map();
 client.once("ready", async () => {
   console.log("Ready!");
   if (!client.application?.owner) {
@@ -120,29 +141,31 @@ client.on("message", async (message: Message) => {
 client.on("interaction", async (interaction) => {
   if (!interaction.isCommand()) return;
 
-  
-  
   switch (interaction.commandName) {
-   
+    case "stop":
+      const dataSwitchStop = interaction.options.get("data").value;
+      stopScheduling(periodic, interaction, dataSwitchStop);
+      break;
     case "set":
-      const dataSwitch=interaction.options.get("data").value
-      const time=interaction.options.get("time").value
-     setScheduling(periodic,dataSwitch,client,interaction,time.toString())
-      
-      
+      const dataSwitch = interaction.options.get("data").value;
+      const time = interaction.options.get("time").value;
+      setScheduling(periodic, dataSwitch, client, interaction, time.toString());
+
       break;
     case "total-validator":
-      await interaction.reply({ embeds: [(await totalValidator())] });
+      await interaction.reply({ embeds: [await totalValidator()] });
       break;
     case "total-block":
-       await interaction.reply({ embeds: [(await totalBlocks())] });
+      await interaction.reply({ embeds: [await totalBlocks()] });
       break;
-      case "block-times":
-      
-      await interaction.reply({ embeds: [(await averageBlockTime())] });
+    case "block-times":
+      await interaction.reply({ embeds: [await averageBlockTime()] });
       break;
     case "help":
-      await interaction.reply({ embeds: [helpMessage.embed], components: [helpMessage.row] });
+      await interaction.reply({
+        embeds: [helpMessage.embed],
+        components: [helpMessage.row],
+      });
       break;
   }
 });

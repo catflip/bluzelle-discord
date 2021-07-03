@@ -1,87 +1,95 @@
-import { Client, CommandInteraction, MessageActionRow, MessageButton, TextChannel } from "discord.js";
-import * as schedule from 'node-schedule'
+import {
+  Client,
+  CommandInteraction,
+  MessageActionRow,
+  MessageButton,
+  TextChannel,
+} from "discord.js";
+import * as schedule from "node-schedule";
 import { Api } from "./api";
-export async function totalValidator(){
+export async function totalValidator() {
   const api = new Api();
-    const totalValidator = await api.getValidator();
-    const embed = {
-      color: 0x0099ff,
-      author: {
-        name: 'Bluzelle bot',
-        icon_url: 'https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg',
-        url: 'https://bluzelle.com/',
+  const totalValidator = await api.getValidator();
+  const embed = {
+    color: 0x0099ff,
+    author: {
+      name: "Bluzelle bot",
+      icon_url:
+        "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
+      url: "https://bluzelle.com/",
+    },
+    fields: [
+      {
+        name: "Active Validators",
+        value: `${
+          totalValidator.filter(
+            (val: any) =>
+              val.jailed === false && val.status === "BOND_STATUS_BONDED"
+          ).length
+        } out of ${totalValidator.length} validators`,
       },
-      fields: [
-        {
-          name: "Active Validators",
-          value: `${
-            totalValidator.filter(
-              (val: any) =>
-                val.jailed === false && val.status === "BOND_STATUS_BONDED"
-            ).length
-          } out of ${totalValidator.length} validators`,
-        },
-      ],
+    ],
 
-      timestamp: new Date(),
-    };
-    return embed
-
+    timestamp: new Date(),
+  };
+  return embed;
 }
 
 export async function totalBlocks() {
   const api = new Api();
-    const totalBlock = await api.getLatestBlockHeight();
-    const embed = {
-      color: 0x0099ff,
-      author: {
-        name: 'Bluzelle bot',
-        icon_url: 'https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg',
-        url: 'https://bluzelle.com/',
+  const totalBlock = await api.getLatestBlockHeight();
+  const embed = {
+    color: 0x0099ff,
+    author: {
+      name: "Bluzelle bot",
+      icon_url:
+        "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
+      url: "https://bluzelle.com/",
+    },
+    fields: [
+      {
+        name: "Latest Block Height",
+        value: `${totalBlock}`,
       },
-      fields: [
-        {
-          name: "Latest Block Height",
-          value: `${totalBlock}`,
-        },
-      ],
+    ],
 
-      timestamp: new Date(),
-    };
-    return embed
+    timestamp: new Date(),
+  };
+  return embed;
 }
 export async function averageBlockTime() {
   const api = new Api();
   const blockTimes = await api.getAverageBlockTime();
-      const embed = {
-        color: 0x0099ff,
-        author: {
-          name: 'Bluzelle bot',
-          icon_url: 'https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg',
-          url: 'https://bluzelle.com/',
-        },
-        fields: [
-          {
-            name: "Average Block Time (All)",
-            value: `${blockTimes} second`,
-          },
-        ],
+  const embed = {
+    color: 0x0099ff,
+    author: {
+      name: "Bluzelle bot",
+      icon_url:
+        "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
+      url: "https://bluzelle.com/",
+    },
+    fields: [
+      {
+        name: "Average Block Time (All)",
+        value: `${blockTimes} second`,
+      },
+    ],
 
-        timestamp: new Date(),
-      };
-      return embed;
-  
+    timestamp: new Date(),
+  };
+  return embed;
 }
 
-export const helpMessage={
-  embed :{
+export const helpMessage = {
+  embed: {
     color: 0x0099ff,
-      description: `A bot that is able to push updates to the Bluzelle Discord channel, reporting relevant statistics gathered from configured networks.
+    description: `A bot that is able to push updates to the Bluzelle Discord channel, reporting relevant statistics gathered from configured networks.
 it can report stats from bluzelle testnet and mainnet. Stats reported might include things like # of validators, # of blocks, block times, etc.`,
     author: {
-      name: 'Bluzelle bot',
-      icon_url: 'https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg',
-      url: 'https://bluzelle.com/',
+      name: "Bluzelle bot",
+      icon_url:
+        "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
+      url: "https://bluzelle.com/",
     },
     fields: [
       {
@@ -113,7 +121,7 @@ it can report stats from bluzelle testnet and mainnet. Stats reported might incl
 
     timestamp: new Date(),
   },
-  row : new MessageActionRow().addComponents(
+  row: new MessageActionRow().addComponents(
     new MessageButton()
       .setLabel("INVITE")
       .setStyle("LINK")
@@ -122,67 +130,109 @@ it can report stats from bluzelle testnet and mainnet. Stats reported might incl
       .setLabel("COMMAND LIST")
       .setStyle("LINK")
       .setURL("https://google.com")
-  )
-  
-}
+  ),
+};
 
-async function sendEmbed(client:Client,channelID:`${bigint}`,embed){
-  console.log("sed");
-  (client.channels.cache.get(channelID) as TextChannel).send({embeds:[(await totalBlocks())]})  
-}
-function scheduling(client:Client,interaction:CommandInteraction,milisecond:number,embed){
-  const setIntervalAsync = (fn, ms) => {
-    fn().then(() => {
-      setTimeout(() => setIntervalAsync(fn, ms), ms);
-    });
-  };
-  return setIntervalAsync(() => sendEmbed(client,interaction.channelID,embed), 3000);
-  
-  
-}
-
-export async function setScheduling(periodList:Map<string,any>,dataSwitch:string|number|boolean,client:Client,interaction:CommandInteraction,time:string){
-  let milisecond;
-  
-  
-  switch(time){
-    case "daily":
-      milisecond = "0 0 * * *";
+async function sendEmbed(client: Client, channelID: `${bigint}`, embed) {
+  let message: any = "sorry can't process message";
+  switch (embed) {
+    case "total-validator":
+      message = { embeds: [await totalValidator()] };
       break;
-      case "hourly":
-        milisecond = "0 * * * *";
-      break;
-      case "minutely":
-      milisecond="* * * * *";
-      break;
-      case "secondly":
-        milisecond="*/5 * * * * *";
-        break;
-  }
- 
-  
-  
-switch(dataSwitch){
-  case "total-validator":
-    if(periodList.has(interaction.guildID) && periodList.get(interaction.guildID).has(interaction.channelID)) return await interaction.reply({ content: `${dataSwitch} has been set, please use /update to update the time` });
-    const channelTotalValidator=new Map();
-    channelTotalValidator.set(interaction.channelID,scheduling(client,interaction,milisecond,{embeds:[(await totalValidator())]}))
-    periodList.set(interaction.guildID,channelTotalValidator)
-    await interaction.reply({ content: `${dataSwitch} has been set, please use /update to update the time and /stop to stop the data` });
-    break;
     case "total-blocks":
-    if(periodList.has(interaction.guildID) && periodList.get(interaction.guildID).has(interaction.channelID)) return await interaction.reply({ content: "${dataSwitch} has been set, please use /update to update the time" });
-    const channelTotalBlocks=new Map();
-    channelTotalBlocks.set(interaction.channelID,scheduling(client,interaction,milisecond,{embeds:[(await totalBlocks())]}))
-    periodList.set(interaction.guildID,channelTotalBlocks)
-    await interaction.reply({ content: `${dataSwitch} has been set, please use /update to update the time and /stop to stop the data` });
-    break;
+      message = { embeds: [await totalBlocks()] };
+      break;
     case "block-times":
-    if(periodList.has(interaction.guildID) && periodList.get(interaction.guildID).has(interaction.channelID)) return await interaction.reply({ content: "${dataSwitch} has been set, please use /update to update the time" });
-    const channelBlockTimes=new Map();
-    channelBlockTimes.set(interaction.channelID,scheduling(client,interaction,milisecond,{embeds:[(await totalBlocks())]}))
-    periodList.set(interaction.guildID,channelBlockTimes)
-    await interaction.reply({ content: `${dataSwitch} has been set, please use /update to update the time and /stop to stop the data` });
-    break;
+      message = { embeds: [await averageBlockTime()] };
+      break;
+  }
+  (client.channels.cache.get(channelID) as TextChannel).send(message);
 }
+function scheduling(
+  client: Client,
+  interaction: CommandInteraction,
+  milisecond: number,
+  embed
+) {
+  return setInterval(
+    () => sendEmbed(client, interaction.channelID, embed),
+    milisecond
+  );
+}
+
+export async function setScheduling(
+  periodList: Map<string, any>,
+  dataSwitch: string | number | boolean,
+  client: Client,
+  interaction: CommandInteraction,
+  time: string
+) {
+  let milisecond;
+
+  switch (time) {
+    case "daily":
+      milisecond = 86400000;
+      break;
+    case "hourly":
+      milisecond = 3600000;
+      break;
+    case "minutely":
+      milisecond = 60000;
+      break;
+    case "secondly":
+      milisecond = 5000;
+      break;
+  }
+  if (
+    periodList.has(interaction.guildID) &&
+    periodList.get(interaction.guildID).has(`${interaction.channelID}:${dataSwitch}`)
+  )
+ {   return await interaction.reply({
+      content: `${dataSwitch} has been set, please use /update to update the time`,
+    });}
+  switch (dataSwitch) {
+    case "total-validator":
+         const channelTotalValidator = new Map();
+      channelTotalValidator.set(
+        `${interaction.channelID}:${dataSwitch}`,
+        scheduling(client, interaction, milisecond, dataSwitch)
+      );
+      periodList.set(interaction.guildID, channelTotalValidator);
+      await interaction.reply({
+        content: `${dataSwitch} has been set, please use /update to update the time and /stop to stop the data`,
+      });
+      break;
+    case "total-blocks":
+           const channelTotalBlocks = new Map();
+      channelTotalBlocks.set(
+        `${interaction.channelID}:${dataSwitch}`,
+        scheduling(client, interaction, milisecond, dataSwitch)
+      );
+      periodList.set(interaction.guildID, channelTotalBlocks);
+      await interaction.reply({
+        content: `${dataSwitch} has been set, please use /update to update the time and /stop to stop the data`,
+      });
+      break;
+    case "block-times":
+         const channelBlockTimes = new Map();
+      channelBlockTimes.set(
+        `${interaction.channelID}:${dataSwitch}`,
+        scheduling(client, interaction, milisecond, dataSwitch)
+      );
+      periodList.set(interaction.guildID, channelBlockTimes);
+      await interaction.reply({
+        content: `${dataSwitch} has been set, please use /update to update the time and /stop to stop the data`,
+      });
+      break;
+  }
+}
+
+export function stopScheduling( periodList: Map<string, any>,interaction: CommandInteraction,dataSwitch:string|boolean|number){
+  if (
+    periodList.has(interaction.guildID) &&
+    periodList.get(interaction.guildID).has(`${interaction.channelID}:${dataSwitch}`)
+  ){
+clearInterval(periodList.get(interaction.guildID).get(`${interaction.channelID}:${dataSwitch}`))
+periodList.get(interaction.guildID).delete(`${interaction.channelID}:${dataSwitch}`)
+  }
 }
