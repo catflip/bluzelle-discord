@@ -55,7 +55,31 @@ const commandList = [
               value: 'block-times',
             }
           ],
-      }
+      },
+      {
+        "name": "time",
+        "description": "what time should the data be sent",
+        "type": 3,
+        required: true,
+        choices: [
+          {
+            name: 'daily',
+            value: 'daily',
+          },
+          {
+            name: 'hourly',
+            value: 'hourly',
+          },
+          {
+            name: 'minutely',
+            value: 'minutely',
+          },
+          {
+            name: 'secondly',
+            value: 'secondly',
+          }
+        ],
+    }
   ]
   },
   {
@@ -96,25 +120,26 @@ client.on("message", async (message: Message) => {
 client.on("interaction", async (interaction) => {
   if (!interaction.isCommand()) return;
 
-  const api = new Api();
+  
   
   switch (interaction.commandName) {
    
     case "set":
       const dataSwitch=interaction.options.get("data").value
-     setScheduling(periodic,dataSwitch)
+      const time=interaction.options.get("time").value
+     setScheduling(periodic,dataSwitch,client,interaction,time.toString())
       
-      await interaction.reply({ content:"s" });
+      
       break;
     case "total-validator":
-      await interaction.reply({ embeds: [(await totalValidator(api))] });
+      await interaction.reply({ embeds: [(await totalValidator())] });
       break;
     case "total-block":
-       await interaction.reply({ embeds: [(await totalBlocks(api))] });
+       await interaction.reply({ embeds: [(await totalBlocks())] });
       break;
       case "block-times":
       
-      await interaction.reply({ embeds: [(await averageBlockTime(api))] });
+      await interaction.reply({ embeds: [(await averageBlockTime())] });
       break;
     case "help":
       await interaction.reply({ embeds: [helpMessage.embed], components: [helpMessage.row] });

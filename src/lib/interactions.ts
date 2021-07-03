@@ -1,7 +1,8 @@
 import { Client, CommandInteraction, MessageActionRow, MessageButton, TextChannel } from "discord.js";
-import { captureRejectionSymbol } from "events";
+import * as schedule from 'node-schedule'
 import { Api } from "./api";
-export async function totalValidator(api:Api){
+export async function totalValidator(){
+  const api = new Api();
     const totalValidator = await api.getValidator();
     const embed = {
       color: 0x0099ff,
@@ -28,7 +29,8 @@ export async function totalValidator(api:Api){
 
 }
 
-export async function totalBlocks(api:Api) {
+export async function totalBlocks() {
+  const api = new Api();
     const totalBlock = await api.getLatestBlockHeight();
     const embed = {
       color: 0x0099ff,
@@ -48,7 +50,8 @@ export async function totalBlocks(api:Api) {
     };
     return embed
 }
-export async function averageBlockTime(api:Api) {
+export async function averageBlockTime() {
+  const api = new Api();
   const blockTimes = await api.getAverageBlockTime();
       const embed = {
         color: 0x0099ff,
@@ -124,19 +127,62 @@ it can report stats from bluzelle testnet and mainnet. Stats reported might incl
 }
 
 async function sendEmbed(client:Client,channelID:`${bigint}`,embed){
-  (client.channels.cache.get(channelID) as TextChannel).send(embed)  
+  console.log("sed");
+  (client.channels.cache.get(channelID) as TextChannel).send({embeds:[(await totalBlocks())]})  
 }
-function scheduling(client:Client,interaction:CommandInteraction,api:Api,milisecond:number,embed){
-  return setInterval(async()=>sendEmbed(client,interaction.channelID,embed),milisecond)
+function scheduling(client:Client,interaction:CommandInteraction,milisecond:number,embed){
+  const setIntervalAsync = (fn, ms) => {
+    fn().then(() => {
+      setTimeout(() => setIntervalAsync(fn, ms), ms);
+    });
+  };
+  return setIntervalAsync(() => sendEmbed(client,interaction.channelID,embed), 3000);
+  
+  
 }
 
-export function setScheduling(periodList:Map<string,any>,dataSwitch:string|number|boolean){
+export async function setScheduling(periodList:Map<string,any>,dataSwitch:string|number|boolean,client:Client,interaction:CommandInteraction,time:string){
+  let milisecond;
+  
+  
+  switch(time){
+    case "daily":
+      milisecond = "0 0 * * *";
+      break;
+      case "hourly":
+        milisecond = "0 * * * *";
+      break;
+      case "minutely":
+      milisecond="* * * * *";
+      break;
+      case "secondly":
+        milisecond="*/5 * * * * *";
+        break;
+  }
+ 
+  
+  
 switch(dataSwitch){
   case "total-validator":
+    if(periodList.has(interaction.guildID) && periodList.get(interaction.guildID).has(interaction.channelID)) return await interaction.reply({ content: `${dataSwitch} has been set, please use /update to update the time` });
+    const channelTotalValidator=new Map();
+    channelTotalValidator.set(interaction.channelID,scheduling(client,interaction,milisecond,{embeds:[(await totalValidator())]}))
+    periodList.set(interaction.guildID,channelTotalValidator)
+    await interaction.reply({ content: `${dataSwitch} has been set, please use /update to update the time and /stop to stop the data` });
     break;
     case "total-blocks":
+    if(periodList.has(interaction.guildID) && periodList.get(interaction.guildID).has(interaction.channelID)) return await interaction.reply({ content: "${dataSwitch} has been set, please use /update to update the time" });
+    const channelTotalBlocks=new Map();
+    channelTotalBlocks.set(interaction.channelID,scheduling(client,interaction,milisecond,{embeds:[(await totalBlocks())]}))
+    periodList.set(interaction.guildID,channelTotalBlocks)
+    await interaction.reply({ content: `${dataSwitch} has been set, please use /update to update the time and /stop to stop the data` });
     break;
     case "block-times":
+    if(periodList.has(interaction.guildID) && periodList.get(interaction.guildID).has(interaction.channelID)) return await interaction.reply({ content: "${dataSwitch} has been set, please use /update to update the time" });
+    const channelBlockTimes=new Map();
+    channelBlockTimes.set(interaction.channelID,scheduling(client,interaction,milisecond,{embeds:[(await totalBlocks())]}))
+    periodList.set(interaction.guildID,channelBlockTimes)
+    await interaction.reply({ content: `${dataSwitch} has been set, please use /update to update the time and /stop to stop the data` });
     break;
 }
 }

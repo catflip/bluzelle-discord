@@ -8,6 +8,7 @@
     "discord.js": "^13.0.0-dev.5ad83a6a65e5944ceb3a41fee2df40ba1f5b03e4",
     "discord.js-slash-command": "^1.2.1",
     "dotenv": "^10.0.0",
+    "node-schedule": "^2.0.0",
     "tendermint": "^5.0.2",
     "wokcommands": "^1.3.6"
   },
