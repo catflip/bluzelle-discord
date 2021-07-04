@@ -10,7 +10,7 @@ import {
   totalBlocks,
   totalValidator,
 } from "./lib/interactions";
-import { Api } from "./lib/api";
+
 
 const client = new Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 const commandList = [
@@ -143,6 +143,7 @@ client.on("interaction", async (interaction) => {
 
   switch (interaction.commandName) {
     case "stop":
+      
       const dataSwitchStop = interaction.options.get("data").value;
       stopScheduling(periodic, interaction, dataSwitchStop);
       break;

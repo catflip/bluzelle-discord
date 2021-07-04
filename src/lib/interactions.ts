@@ -190,36 +190,35 @@ export async function setScheduling(
  {   return await interaction.reply({
       content: `${dataSwitch} has been set, please use /update to update the time`,
     });}
+    if(!periodList.has(interaction.guildID)) periodList.set(interaction.guildID, new Map());
+    const channel= new Map();
   switch (dataSwitch) {
     case "total-validator":
-         const channelTotalValidator = new Map();
-      channelTotalValidator.set(
+      periodList.get(interaction.guildID).set(
         `${interaction.channelID}:${dataSwitch}`,
         scheduling(client, interaction, milisecond, dataSwitch)
       );
-      periodList.set(interaction.guildID, channelTotalValidator);
+      ;
       await interaction.reply({
         content: `${dataSwitch} has been set, please use /update to update the time and /stop to stop the data`,
       });
       break;
     case "total-blocks":
-           const channelTotalBlocks = new Map();
-      channelTotalBlocks.set(
+      periodList.get(interaction.guildID).set(
         `${interaction.channelID}:${dataSwitch}`,
         scheduling(client, interaction, milisecond, dataSwitch)
       );
-      periodList.set(interaction.guildID, channelTotalBlocks);
+      
       await interaction.reply({
         content: `${dataSwitch} has been set, please use /update to update the time and /stop to stop the data`,
       });
       break;
     case "block-times":
-         const channelBlockTimes = new Map();
-      channelBlockTimes.set(
+      periodList.get(interaction.guildID).set(
         `${interaction.channelID}:${dataSwitch}`,
         scheduling(client, interaction, milisecond, dataSwitch)
       );
-      periodList.set(interaction.guildID, channelBlockTimes);
+      
       await interaction.reply({
         content: `${dataSwitch} has been set, please use /update to update the time and /stop to stop the data`,
       });
@@ -227,12 +226,21 @@ export async function setScheduling(
   }
 }
 
-export function stopScheduling( periodList: Map<string, any>,interaction: CommandInteraction,dataSwitch:string|boolean|number){
+export async function stopScheduling( periodList: Map<string, any>,interaction: CommandInteraction,dataSwitch:string|boolean|number){
   if (
     periodList.has(interaction.guildID) &&
     periodList.get(interaction.guildID).has(`${interaction.channelID}:${dataSwitch}`)
   ){
+    
 clearInterval(periodList.get(interaction.guildID).get(`${interaction.channelID}:${dataSwitch}`))
 periodList.get(interaction.guildID).delete(`${interaction.channelID}:${dataSwitch}`)
+await interaction.reply({
+  content: `${dataSwitch} has been stopped, please use /set to set it again`,
+});
+  }else{
+    console.log(periodList)
+      await interaction.reply({
+      content: `${dataSwitch} is not set, set it using /set command`,
+    }); 
   }
 }
