@@ -79,7 +79,50 @@ export async function averageBlockTime() {
   };
   return embed;
 }
+export async function consensusStateEmbed() {
+  const api = new Api();
+  const {votingHeight,votingRound,votingStep,proposer,votedPower} = await api.getConsensusState();
+  const embed = {
+    color: 0x0099ff,
+    title:"Consensus State",
+    author: {
+      name: "Bluzelle bot",
+      icon_url:
+        "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
+      url: "https://bluzelle.com/",
+    },
+    fields: [
+      {
+        name: "Height",
+        value: `${votingHeight}`,
+        
+      },
+      {
+        name: "Round",
+        value: `${votingRound}`,
+        
+      },
+      {
+        name: "Step",
+        value: `${votingStep}`,
+        
+      },
+      {
+        name: "Proposer",
+        value: `${proposer.description.moniker}`,
+        
+      },
+      {
+        name: "Voting Power",
+        value: `${votedPower}`,
+        
+      },
+    ],
 
+    timestamp: new Date(),
+  };
+  return embed;
+}
 export const helpMessage = {
   embed: {
     color: 0x0099ff,
@@ -145,6 +188,9 @@ async function sendEmbed(client: Client, channelID: `${bigint}`, embed) {
     case "block-times":
       message = { embeds: [await averageBlockTime()] };
       break;
+    case "consensus-state":
+      message = { embeds: [await consensusStateEmbed()] };
+      break;
   }
   (client.channels.cache.get(channelID) as TextChannel).send(message);
 }
@@ -185,62 +231,54 @@ export async function setScheduling(
   }
   if (
     periodList.has(interaction.guildID) &&
-    periodList.get(interaction.guildID).has(`${interaction.channelID}:${dataSwitch}`)
-  )
- {   return await interaction.reply({
+    periodList
+      .get(interaction.guildID)
+      .has(`${interaction.channelID}:${dataSwitch}`)
+  ) {
+    return await interaction.reply({
       content: `${dataSwitch} has been set, please use /update to update the time`,
-    });}
-    if(!periodList.has(interaction.guildID)) periodList.set(interaction.guildID, new Map());
-    const channel= new Map();
-  switch (dataSwitch) {
-    case "total-validator":
-      periodList.get(interaction.guildID).set(
-        `${interaction.channelID}:${dataSwitch}`,
-        scheduling(client, interaction, milisecond, dataSwitch)
-      );
-      ;
-      await interaction.reply({
-        content: `${dataSwitch} has been set, please use /update to update the time and /stop to stop the data`,
-      });
-      break;
-    case "total-blocks":
-      periodList.get(interaction.guildID).set(
-        `${interaction.channelID}:${dataSwitch}`,
-        scheduling(client, interaction, milisecond, dataSwitch)
-      );
-      
-      await interaction.reply({
-        content: `${dataSwitch} has been set, please use /update to update the time and /stop to stop the data`,
-      });
-      break;
-    case "block-times":
-      periodList.get(interaction.guildID).set(
-        `${interaction.channelID}:${dataSwitch}`,
-        scheduling(client, interaction, milisecond, dataSwitch)
-      );
-      
-      await interaction.reply({
-        content: `${dataSwitch} has been set, please use /update to update the time and /stop to stop the data`,
-      });
-      break;
+    });
   }
+  if (!periodList.has(interaction.guildID))
+    periodList.set(interaction.guildID, new Map());
+  periodList
+    .get(interaction.guildID)
+    .set(
+      `${interaction.channelID}:${dataSwitch}`,
+      scheduling(client, interaction, milisecond, dataSwitch)
+    );
+
+  await interaction.reply({
+    content: `${dataSwitch} has been set, please use /update to update the time and /stop to stop the data`,
+  });
 }
 
-export async function stopScheduling( periodList: Map<string, any>,interaction: CommandInteraction,dataSwitch:string|boolean|number){
+export async function stopScheduling(
+  periodList: Map<string, any>,
+  interaction: CommandInteraction,
+  dataSwitch: string | boolean | number
+) {
   if (
     periodList.has(interaction.guildID) &&
-    periodList.get(interaction.guildID).has(`${interaction.channelID}:${dataSwitch}`)
-  ){
-    
-clearInterval(periodList.get(interaction.guildID).get(`${interaction.channelID}:${dataSwitch}`))
-periodList.get(interaction.guildID).delete(`${interaction.channelID}:${dataSwitch}`)
-await interaction.reply({
-  content: `${dataSwitch} has been stopped, please use /set to set it again`,
-});
-  }else{
-    console.log(periodList)
-      await interaction.reply({
+    periodList
+      .get(interaction.guildID)
+      .has(`${interaction.channelID}:${dataSwitch}`)
+  ) {
+    clearInterval(
+      periodList
+        .get(interaction.guildID)
+        .get(`${interaction.channelID}:${dataSwitch}`)
+    );
+    periodList
+      .get(interaction.guildID)
+      .delete(`${interaction.channelID}:${dataSwitch}`);
+    await interaction.reply({
+      content: `${dataSwitch} has been stopped, please use /set to set it again`,
+    });
+  } else {
+    console.log(periodList);
+    await interaction.reply({
       content: `${dataSwitch} is not set, set it using /set command`,
-    }); 
+    });
   }
 }

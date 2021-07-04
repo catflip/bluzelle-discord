@@ -4,6 +4,7 @@ dotenv.config({ path: `${__dirname}/.env.local` });
 import { Client, Message } from "discord.js";
 import {
   averageBlockTime,
+  consensusStateEmbed,
   helpMessage,
   setScheduling,
   stopScheduling,
@@ -29,6 +30,10 @@ const commandList = [
   {
     name: "block-times",
     description: "average block times",
+  },
+  {
+    name: "consensus-state",
+    description: "get consensus state",
   },
   {
     name: "set",
@@ -111,15 +116,15 @@ const commandList = [
 let periodic = new Map();
 client.once("ready", async () => {
   console.log("Ready!");
-  if (!client.application?.owner) {
-    await client.application?.fetch();
-    await client.guilds.cache
-      .get(process.env.GUILD_ID as any)
-      ?.commands.set([]);
-    await client.guilds.cache
-      .get(process.env.GUILD_ID as any)
-      ?.commands.set(commandList);
-  }
+  // if (!client.application?.owner) {
+  //   await client.application?.fetch();
+  //   await client.guilds.cache
+  //     .get(process.env.GUILD_ID as any)
+  //     ?.commands.set([]);
+  //   await client.guilds.cache
+  //     .get(process.env.GUILD_ID as any)
+  //     ?.commands.set(commandList);
+  // }
 });
 client.on("message", async (message: Message) => {
   if (!client.application?.owner) {
@@ -162,6 +167,9 @@ client.on("interaction", async (interaction) => {
     case "block-times":
       await interaction.reply({ embeds: [await averageBlockTime()] });
       break;
+      case "consensus-state":
+        await interaction.reply({ embeds: [await consensusStateEmbed()] });
+        break;
     case "help":
       await interaction.reply({
         embeds: [helpMessage.embed],

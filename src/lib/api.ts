@@ -36,7 +36,7 @@ export class Api {
    */
   async getConsensusState() {
     const url: string = `https://${this.url}:${this.rpcPort}/dump_consensus_state`;
-    console.log(url)
+    
     try {
       let response = await axios.get(url);
       let consensus = response.data;
@@ -49,58 +49,24 @@ export class Api {
           consensus.round_state.votes[round].prevotes_bit_array.split(" ")[3]
         ) * 100
       );
-      return "";
-      // return this.pubkeyToBech32(consensus.round_state.validators.proposer.pub_key,"bluzellevaloper")
-      // return {
-      //   votingHeight: height,
-      //   votingRound: round,
-      //   votingStep: step,
-      //   votedPower: votedPower,
-      //   proposerAddress:this.pubkeyToBech32(consensus.round_state.validators.proposer.pub_key,"bluzellevaloper"),
-      //   prevotes: consensus.round_state.votes[round].prevotes,
-      //   precommits: consensus.round_state.votes[round].precommits,
-      // };
+      return {
+        votingHeight: height,
+        votingRound: round,
+        votingStep: step,
+        votedPower: votedPower,
+        proposer:(await this.getMoniker(consensus.round_state.validators.proposer.pub_key.value)),
+        
+      };
     } catch (e) {
       console.log(url);
       console.log(e);
     }
   }
-    /**
-   *  get proposer moniker
-   */
-  // public async getProposerMoniker() {
-  //   let validators = [];
-  //   let page = 0;
-  //   // let nextKey = 0;
-  //   try {
-  //     let result;
-  //     do {
-  //       const url: string = `https://${this.url}:${
-  //         this.rpcPort
-  //       }/validators?status=BOND_STATUS_BONDED&page=${++page}&per_page=100`;
-  //       let response = await axios.get(url);
-  //       result = response.data.result;
-
-  //       validators = [...validators, ...result.validators];
-  //     } while (validators.length < parseInt(result.total));
-  //     let tempValidators = {};
-  //     for (let v in validators) {
-  //       validators[v].valconsAddress = this.hexToBech32(
-  //         validators[v].address,
-  //         this.bech32PrefixConsAddr
-  //       );
-  //       tempValidators[validators[v].address] = validators[v];
-      
-  //     }
-  //     return tempValidators;
-  //   } catch (e) {
-  //     console.log("Getting validator set at height %o: %o", e);
-  //   }
-  // }
+  
   /**
-   *  method to convert hex to bech32
+   *  method to get moniker
    */
-  public async getMoniker(pubkey?:string){
+  private async getMoniker(pubkey?:string){
     let validatorSet = new Map();
     // get latest validator candidate information
 
@@ -118,8 +84,8 @@ export class Api {
         console.log(e);
     }
     
-    console.log(validatorSet.size)
-  return "validatorSet";
+
+  return validatorSet.has(pubkey)?validatorSet.get(pubkey):{};
   }
   /**
    *  method to get validator
