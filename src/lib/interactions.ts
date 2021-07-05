@@ -5,7 +5,7 @@ import {
   MessageButton,
   TextChannel,
 } from "discord.js";
-import * as schedule from "node-schedule";
+import * as numeral from "numeral"
 import { Api } from "./api";
 export async function totalValidator() {
   const api = new Api();
@@ -36,8 +36,10 @@ export async function totalValidator() {
 }
 
 export async function validatorByAddressEmbed(address:string) {
+
   const api = new Api();
-  const validatorInfo = await api.getValidatorByAddress(address);
+  const {validator:validatorInfo} = await api.getValidatorByAddress(address);
+  
   const embed = {
     color: 0x0099ff,
     author: {
@@ -46,7 +48,7 @@ export async function validatorByAddressEmbed(address:string) {
         "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
       url: "https://bluzelle.com/",
     },
-    title:"Validator Info",
+    title:`${validatorInfo.description.moniker} details`,
     fields: [
       {
         name: "Operator Address",
@@ -54,19 +56,19 @@ export async function validatorByAddressEmbed(address:string) {
       },
       {
         name: "Self-Delegate Address",
-        value: `${api.bigDipperUrl}/account/${api.getDelegator(validatorInfo.operator_address)}`,
+        value: `[${api.getDelegator(validatorInfo.operator_address)}](${api.bigDipperUrl}/account/${api.getDelegator(validatorInfo.operator_address)})`,
       },
       {
         name: "Commission Rate",
-        value: `${validatorInfo.operator_address}`,
+        value: `${validatorInfo.commission&&validatorInfo.commission.commission_rates?numeral(validatorInfo.commission.commission_rates.rate*100).format('0.00')+"%":''}`,
       },
       {
         name: "Max Rate",
-        value: `${validatorInfo.operator_address}`,
+        value: `${validatorInfo.commission&&validatorInfo.commission.commission_rates?numeral(validatorInfo.commission.commission_rates.max_rate*100).format('0.00')+"%":''}`,
       },
       {
         name: "Max Change Rate",
-        value: `${validatorInfo.operator_address}`,
+        value: `${validatorInfo.commission&&validatorInfo.commission.commission_rates?numeral(validatorInfo.commission.commission_rates.max_change_rate*100).format('0.00')+"%":''}`,
       },
     ],
 
@@ -111,6 +113,30 @@ export async function averageBlockTime() {
       {
         name: "Average Block Time (All)",
         value: `${blockTimes} second`,
+      },
+    ],
+
+    timestamp: new Date(),
+  };
+  return embed;
+}
+export async function onlineVotingPowerEmbed() {
+  const api = new Api();
+  const onlineVotingPower = await api.getOnlineVotingPower();
+  const embed = {
+    color: 0x0099ff,
+    author: {
+      name: "Bluzelle bot",
+      icon_url:
+        "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
+      url: "https://bluzelle.com/",
+    },
+    fields: [
+      {
+        name: "Online Voting Power (Now)",
+        value: `${numeral(onlineVotingPower).format('0,0.00a')}
+        0.00% from 0.75b
+        `,
       },
     ],
 

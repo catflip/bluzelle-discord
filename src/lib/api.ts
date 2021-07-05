@@ -19,19 +19,19 @@ export class Api {
   /**
    *  the api port of bluzelle network url
    */
-   public bigDipperUrl: string;
+  public bigDipperUrl: string;
   /**
    *  get it from console in here https://bigdipper.testnet.private.bluzelle.com/ by console.log(Meteor.settings.public.bech32PrefixConsAddr)
    */
   private bech32PrefixConsAddr: string;
   private bech32PrefixAccAddr: string;
-  
+
   //http://sandbox.sentry.net.bluzelle.com/ mainnet
   constructor(
     url: string = "client.sentry.testnet.private.bluzelle.com",
     apiPort: number = 1317,
     rpcPort: number = 26657,
-    bigDipperUrl:string="https://bigdipper.testnet.private.bluzelle.com"
+    bigDipperUrl: string = "https://bigdipper.testnet.private.bluzelle.com"
   ) {
     this.url = url;
     this.apiPort = apiPort;
@@ -45,7 +45,7 @@ export class Api {
    */
   async getConsensusState() {
     const url: string = `https://${this.url}:${this.rpcPort}/dump_consensus_state`;
-    
+
     try {
       let response = await axios.get(url);
       let consensus = response.data;
@@ -63,120 +63,138 @@ export class Api {
         votingRound: round,
         votingStep: step,
         votedPower: votedPower,
-        proposer:(await this.getMoniker(consensus.round_state.validators.proposer.pub_key.value)),
-        
+        proposer: await this.getMoniker(
+          consensus.round_state.validators.proposer.pub_key.value
+        ),
       };
     } catch (e) {
       console.log(url);
       console.log(e);
     }
   }
-   /**
+  /**
    *  get delegator address from operator address
    */
-  getDelegator(operatorAddr){
+  getDelegator(operatorAddr) {
     let address = bech32.decode(operatorAddr);
     return bech32.encode(this.bech32PrefixAccAddr, address.words);
   }
   /**
    *  method to get moniker
    */
-  private async getMoniker(pubkey?:string){
+  private async getMoniker(pubkey?: string) {
     let validatorSet = new Map();
     // get latest validator candidate information
 
-    let url = `https://${this.url}:${
-      this.apiPort
-    }/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200&pagination.count_total=true`;
+    let url = `https://${this.url}:${this.apiPort}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200&pagination.count_total=true`;
 
-    try{
-        let response = await axios.get(url);
-        let result = response.data.validators;
-        result.forEach((validator) => validatorSet.set(validator.consensus_pubkey.key,validator)  );
+    try {
+      let response = await axios.get(url);
+      let result = response.data.validators;
+      result.forEach((validator) =>
+        validatorSet.set(validator.consensus_pubkey.key, validator)
+      );
+    } catch (e) {
+      console.log(url);
+      console.log(e);
     }
-    catch(e){
-        console.log(url);
-        console.log(e);
-    }
-    
 
-  return validatorSet.has(pubkey)?validatorSet.get(pubkey):{};
+    return validatorSet.has(pubkey) ? validatorSet.get(pubkey) : {};
   }
   /**
    *  method to get validator
    */
-   public async getValidator():Promise<Array<object>>{
+  public async getValidator(): Promise<Array<object>> {
     let validatorSet = [];
     // get latest validator candidate information
 
-    let url = `https://${this.url}:${
-      this.apiPort
-    }/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200&pagination.count_total=true`;
+    let url = `https://${this.url}:${this.apiPort}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200&pagination.count_total=true`;
 
-    try{
-        let response = await axios.get(url);
-        let result = response.data.validators;
-        validatorSet=result;
+    try {
+      let response = await axios.get(url);
+      let result = response.data.validators;
+      validatorSet = result;
+    } catch (e) {
+      console.log(url);
+      console.log(e);
     }
-    catch(e){
-        console.log(url);
-        console.log(e);
-    }
-    
-  return validatorSet;
+
+    return validatorSet;
   }
   /**
    *  method to get latest block height
    */
-  public async getLatestBlockHeight(){
-    let url = `https://${this.url}:${
-      this.rpcPort
-    }/status`;
-        try{
-            let response = await axios.get(url);
-            let status = response.data;
-            return new Intl.NumberFormat('en-US').format(status.result.sync_info.latest_block_height);
-        }
-        catch (e){
-            return 0;
-        }
+  public async getLatestBlockHeight() {
+    let url = `https://${this.url}:${this.rpcPort}/status`;
+    try {
+      let response = await axios.get(url);
+      let status = response.data;
+      return new Intl.NumberFormat("en-US").format(
+        status.result.sync_info.latest_block_height
+      );
+    } catch (e) {
+      return 0;
+    }
   }
-   /**
+  /**
+   *  method to get online voting power
+   */
+  public async getOnlineVotingPower() {
+    let validators = [];
+    let page = 0;
+    let result;
+    do {
+      const url = `https://${this.url}:${
+        this.rpcPort
+      }/validators?page=${++page}&per_page=100`;
+      let response = await axios.get(url);
+      result = response.data.result;
+      validators = [...validators, ...result.validators];
+    } while (validators.length < parseInt(result.total));
+
+    let activeVP = 0;
+    for (const v in validators) {
+      activeVP += parseInt(validators[v].voting_power);
+    }
+    let activeVotingPower = activeVP;
+    return activeVotingPower;
+  }
+
+  /**
    *  method to get validator detail by address
    */
-    public async getValidatorByAddress(address:string){
-      let url = `https://${this.url}:${
-        this.apiPort
-      }/cosmos/staking/v1beta1/validators/${address}`;
-        try{
-              let response = await axios.get(url);
-              let status = response.data;
-              return status;
-          }
-          catch (e){
-              return {};
-          }
+  public async getValidatorByAddress(address: string) {
+    let url = `https://${this.url}:${this.apiPort}/cosmos/staking/v1beta1/validators/${address}`;
+    try {
+      let response = await axios.get(url);
+      let status = response.data;
+      return status;
+    } catch (e) {
+      return {};
     }
+  }
   /**
    *  method to get block time
    */
-   public async getAverageBlockTime(){
-    const rpcUrl=`https://${this.url}:${this.rpcPort}/status`;
-    const rpcData=await axios.get(rpcUrl)
-    const latestBlockHeight=rpcData.data.result.sync_info.latest_block_height;
-    const latestBlockTime=rpcData.data.result.sync_info.latest_block_time;
-    const earliestBlockTime=rpcData.data.result.sync_info.earliest_block_time;
-    const apiUrl=`https://${this.url}:${this.apiPort}/blocks/${Number(latestBlockHeight)-1}`;
-     const apiData=await axios.get(apiUrl)
-     const lastTime=apiData.data.block.time
+  public async getAverageBlockTime() {
+    const rpcUrl = `https://${this.url}:${this.rpcPort}/status`;
+    const rpcData = await axios.get(rpcUrl);
+    const latestBlockHeight = rpcData.data.result.sync_info.latest_block_height;
+    const latestBlockTime = rpcData.data.result.sync_info.latest_block_time;
+    const earliestBlockTime = rpcData.data.result.sync_info.earliest_block_time;
+    const apiUrl = `https://${this.url}:${this.apiPort}/blocks/${
+      Number(latestBlockHeight) - 1
+    }`;
+    const apiData = await axios.get(apiUrl);
+    const lastTime = apiData.data.block.time;
     let dateLatest = new Date(latestBlockTime);
     let dateLast = new Date(lastTime);
     let genesisTime = new Date(earliestBlockTime);
-    
-    
+
     // let timeDiff = Math.abs(dateLatest.getTime() - dateLast.getTime());
-    let blockTime = (dateLatest.getTime() - genesisTime.getTime()) / Number(latestBlockHeight);
-    return (blockTime/1000).toFixed(2);
+    let blockTime =
+      (dateLatest.getTime() - genesisTime.getTime()) /
+      Number(latestBlockHeight);
+    return (blockTime / 1000).toFixed(2);
   }
-    
 }

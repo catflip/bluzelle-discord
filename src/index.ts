@@ -6,13 +6,14 @@ import {
   averageBlockTime,
   consensusStateEmbed,
   helpMessage,
+  onlineVotingPowerEmbed,
   setScheduling,
   stopScheduling,
   totalBlocks,
   totalValidator,
+  validatorByAddressEmbed,
 } from "./lib/interactions";
 import { Api } from "./lib/api";
-
 
 const client = new Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 const commandList = [
@@ -35,6 +36,10 @@ const commandList = [
   {
     name: "consensus-state",
     description: "get consensus state",
+  },
+  {
+    name: "online-voting-power",
+    description: "get online voting power",
   },
   {
     name: "set",
@@ -130,9 +135,9 @@ client.once("ready", async () => {
 client.on("message", async (message: Message) => {
   if (!client.application?.owner) {
     await client.application?.fetch();
-    await client.guilds.cache
-      .get(process.env.GUILD_ID as any)
-      ?.commands.set([]);
+    // await client.guilds.cache
+    //   .get(process.env.GUILD_ID as any)
+    //   ?.commands.set([]);
   }
 
   if (
@@ -145,22 +150,29 @@ client.on("message", async (message: Message) => {
   }
 });
 client.on("interaction", async (interaction) => {
-  if(interaction.isButton()){
-    const api=new Api();
-    switch(interaction.customID.split(":")[0]){
+  if (interaction.isButton()) {
+    switch (interaction.customID.split(":")[0]) {
       case "getvalidator":
+        interaction.reply({
+          embeds: [
+            await validatorByAddressEmbed(interaction.customID.split(":")[1]),
+          ],
+        });
         break;
-
+      default:
+        interaction.reply({
+          content: "can't find the command you looking for",
+          ephemeral: true,
+        });
+        break;
     }
     // console.log(interaction.customID)
     // console.log(await api.getValidatorByAddress(interaction.customID));
-    interaction.reply({content:"ss"})
   }
   if (!interaction.isCommand()) return;
 
   switch (interaction.commandName) {
     case "stop":
-      
       const dataSwitchStop = interaction.options.get("data").value;
       stopScheduling(periodic, interaction, dataSwitchStop);
       break;
@@ -179,9 +191,15 @@ client.on("interaction", async (interaction) => {
     case "block-times":
       await interaction.reply({ embeds: [await averageBlockTime()] });
       break;
-      case "consensus-state":
-        await interaction.reply({ embeds: [(await consensusStateEmbed()).embed],components:[(await consensusStateEmbed()).row] });
-        break;
+    case "consensus-state":
+      await interaction.reply({
+        embeds: [(await consensusStateEmbed()).embed],
+        components: [(await consensusStateEmbed()).row],
+      });
+      break;
+      case "online-voting-power":
+      await interaction.reply({ embeds: [await onlineVotingPowerEmbed()] });
+      break;
     case "help":
       await interaction.reply({
         embeds: [helpMessage.embed],
