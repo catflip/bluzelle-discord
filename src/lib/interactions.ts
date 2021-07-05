@@ -35,6 +35,45 @@ export async function totalValidator() {
   return embed;
 }
 
+export async function validatorByAddressEmbed(address:string) {
+  const api = new Api();
+  const validatorInfo = await api.getValidatorByAddress(address);
+  const embed = {
+    color: 0x0099ff,
+    author: {
+      name: "Bluzelle bot",
+      icon_url:
+        "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
+      url: "https://bluzelle.com/",
+    },
+    title:"Validator Info",
+    fields: [
+      {
+        name: "Operator Address",
+        value: `${validatorInfo.operator_address}`,
+      },
+      {
+        name: "Self-Delegate Address",
+        value: `${api.bigDipperUrl}/account/${api.getDelegator(validatorInfo.operator_address)}`,
+      },
+      {
+        name: "Commission Rate",
+        value: `${validatorInfo.operator_address}`,
+      },
+      {
+        name: "Max Rate",
+        value: `${validatorInfo.operator_address}`,
+      },
+      {
+        name: "Max Change Rate",
+        value: `${validatorInfo.operator_address}`,
+      },
+    ],
+
+    timestamp: new Date(),
+  };
+  return embed;
+}
 export async function totalBlocks() {
   const api = new Api();
   const totalBlock = await api.getLatestBlockHeight();
@@ -109,7 +148,7 @@ export async function consensusStateEmbed() {
       },
       {
         name: "Proposer",
-        value: `${proposer.description.moniker}`,
+        value: `[${proposer.description.moniker}](${api.bigDipperUrl}/validator/${proposer.operator_address})`,
         
       },
       {
@@ -121,7 +160,16 @@ export async function consensusStateEmbed() {
 
     timestamp: new Date(),
   };
-  return embed;
+  
+  const row = new MessageActionRow()
+			.addComponents(
+				new MessageButton()
+					.setCustomID(`getvalidator:${proposer.operator_address}`)
+					.setLabel(`${proposer.description.moniker} details`)
+					.setStyle('PRIMARY'),
+        
+			);
+  return {embed,row};
 }
 export const helpMessage = {
   embed: {
@@ -189,7 +237,7 @@ async function sendEmbed(client: Client, channelID: `${bigint}`, embed) {
       message = { embeds: [await averageBlockTime()] };
       break;
     case "consensus-state":
-      message = { embeds: [await consensusStateEmbed()] };
+      message = { embeds: [(await consensusStateEmbed()).embed],components:[(await consensusStateEmbed()).row] };
       break;
   }
   (client.channels.cache.get(channelID) as TextChannel).send(message);

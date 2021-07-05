@@ -11,6 +11,7 @@ import {
   totalBlocks,
   totalValidator,
 } from "./lib/interactions";
+import { Api } from "./lib/api";
 
 
 const client = new Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
@@ -144,6 +145,17 @@ client.on("message", async (message: Message) => {
   }
 });
 client.on("interaction", async (interaction) => {
+  if(interaction.isButton()){
+    const api=new Api();
+    switch(interaction.customID.split(":")[0]){
+      case "getvalidator":
+        break;
+
+    }
+    // console.log(interaction.customID)
+    // console.log(await api.getValidatorByAddress(interaction.customID));
+    interaction.reply({content:"ss"})
+  }
   if (!interaction.isCommand()) return;
 
   switch (interaction.commandName) {
@@ -168,7 +180,7 @@ client.on("interaction", async (interaction) => {
       await interaction.reply({ embeds: [await averageBlockTime()] });
       break;
       case "consensus-state":
-        await interaction.reply({ embeds: [await consensusStateEmbed()] });
+        await interaction.reply({ embeds: [(await consensusStateEmbed()).embed],components:[(await consensusStateEmbed()).row] });
         break;
     case "help":
       await interaction.reply({

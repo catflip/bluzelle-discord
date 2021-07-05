@@ -1,5 +1,5 @@
 import axios from "axios";
-import { appendFile } from "fs";
+import { bech32 } from "bech32";
 /**
  *  Connect with the bluzelle network API and RPC to get the data
  */
@@ -17,19 +17,28 @@ export class Api {
    */
   private apiPort: number;
   /**
+   *  the api port of bluzelle network url
+   */
+   public bigDipperUrl: string;
+  /**
    *  get it from console in here https://bigdipper.testnet.private.bluzelle.com/ by console.log(Meteor.settings.public.bech32PrefixConsAddr)
    */
   private bech32PrefixConsAddr: string;
+  private bech32PrefixAccAddr: string;
+  
   //http://sandbox.sentry.net.bluzelle.com/ mainnet
   constructor(
     url: string = "client.sentry.testnet.private.bluzelle.com",
     apiPort: number = 1317,
-    rpcPort: number = 26657
+    rpcPort: number = 26657,
+    bigDipperUrl:string="https://bigdipper.testnet.private.bluzelle.com"
   ) {
     this.url = url;
     this.apiPort = apiPort;
     this.rpcPort = rpcPort;
+    this.bigDipperUrl = bigDipperUrl;
     this.bech32PrefixConsAddr = "bluzellevalcons";
+    this.bech32PrefixAccAddr = "bluzelle";
   }
   /**
    *  get consensus state from the rpc
@@ -62,7 +71,13 @@ export class Api {
       console.log(e);
     }
   }
-  
+   /**
+   *  get delegator address from operator address
+   */
+  getDelegator(operatorAddr){
+    let address = bech32.decode(operatorAddr);
+    return bech32.encode(this.bech32PrefixAccAddr, address.words);
+  }
   /**
    *  method to get moniker
    */
@@ -126,6 +141,22 @@ export class Api {
             return 0;
         }
   }
+   /**
+   *  method to get validator detail by address
+   */
+    public async getValidatorByAddress(address:string){
+      let url = `https://${this.url}:${
+        this.apiPort
+      }/cosmos/staking/v1beta1/validators/${address}`;
+        try{
+              let response = await axios.get(url);
+              let status = response.data;
+              return status;
+          }
+          catch (e){
+              return {};
+          }
+    }
   /**
    *  method to get block time
    */
@@ -143,7 +174,7 @@ export class Api {
     let genesisTime = new Date(earliestBlockTime);
     
     
-    let timeDiff = Math.abs(dateLatest.getTime() - dateLast.getTime());
+    // let timeDiff = Math.abs(dateLatest.getTime() - dateLast.getTime());
     let blockTime = (dateLatest.getTime() - genesisTime.getTime()) / Number(latestBlockHeight);
     return (blockTime/1000).toFixed(2);
   }
