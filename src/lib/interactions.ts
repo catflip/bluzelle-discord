@@ -123,6 +123,7 @@ export async function averageBlockTime() {
 export async function onlineVotingPowerEmbed() {
   const api = new Api();
   const onlineVotingPower = await api.getOnlineVotingPower();
+  const percentageAndTotalStake=await api.getPercentageAndTotalStake();
   const embed = {
     color: 0x0099ff,
     author: {
@@ -135,7 +136,7 @@ export async function onlineVotingPowerEmbed() {
       {
         name: "Online Voting Power (Now)",
         value: `${numeral(onlineVotingPower).format('0,0.00a')}
-        0.00% from 0.75b
+        ${percentageAndTotalStake.percentage} from ${percentageAndTotalStake.totalStake}
         `,
       },
     ],

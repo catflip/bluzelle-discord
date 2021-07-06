@@ -1,5 +1,7 @@
 import axios from "axios";
 import { bech32 } from "bech32";
+import * as numeral from "numeral";
+import * as numbro from "numbro";
 /**
  *  Connect with the bluzelle network API and RPC to get the data
  */
@@ -25,7 +27,8 @@ export class Api {
    */
   private bech32PrefixConsAddr: string;
   private bech32PrefixAccAddr: string;
-
+  private coins: Array<any>;
+  private bondDenom: string;
   //http://sandbox.sentry.net.bluzelle.com/ mainnet
   constructor(
     url: string = "client.sentry.testnet.private.bluzelle.com",
@@ -39,6 +42,14 @@ export class Api {
     this.bigDipperUrl = bigDipperUrl;
     this.bech32PrefixConsAddr = "bluzellevalcons";
     this.bech32PrefixAccAddr = "bluzelle";
+    this.coins = [
+      {
+        denom: "ubnt",
+        displayName: "BLZ",
+        fraction: 1000000,
+      },
+    ];
+    this.bondDenom = "ubnt";
   }
   /**
    *  get consensus state from the rpc
@@ -172,6 +183,52 @@ export class Api {
     } catch (e) {
       return {};
     }
+  }
+  private async getBondedToken(): Promise<{
+    bondedTokens: number;
+    notBondedTokens: number;
+  }> {
+    let chainStates: { bondedTokens: number; notBondedTokens: number } = {
+      bondedTokens: 0,
+      notBondedTokens: 0,
+    };
+    try {
+      let url = `https://${this.url}:${this.apiPort}/cosmos/staking/v1beta1/pool`;
+      let response = await axios.get(url);
+      let bonding = response.data.pool;
+      chainStates.bondedTokens = parseInt(bonding.bonded_tokens);
+      chainStates.notBondedTokens = parseInt(bonding.not_bonded_tokens);
+      return chainStates;
+    } catch (e) {
+      return { bondedTokens: 0, notBondedTokens: 0 };
+    }
+  }
+  private async getTotalSupply() {
+    let StakingCoin = this.coins.find((coin) => coin.denom === this.bondDenom);
+    try {
+      let url =
+        `https://${this.url}:${this.apiPort}/cosmos/bank/v1beta1/supply/` +
+        StakingCoin.denom;
+      let response = await axios.get(url);
+      let supply = response.data;
+      return parseInt(supply.amount.amount);
+    } catch (e) {
+      return 0;
+    }
+  }
+  public async getPercentageAndTotalStake() {
+    let StakingCoin = this.coins.find((coin) => coin.denom === this.bondDenom);
+    
+    return {
+      percentage: numeral(
+        (await this.getBondedToken()).bondedTokens /
+          (await this.getTotalSupply())
+      ).format("0.00%"),
+      // @ts-ignore
+      totalStake: numbro(
+        (await this.getTotalSupply()) / StakingCoin.fraction
+      ).format("0.00a"),
+    };
   }
   /**
    *  method to get block time
