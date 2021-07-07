@@ -2,6 +2,7 @@ import axios from "axios";
 import { bech32 } from "bech32";
 import * as numeral from "numeral";
 import * as numbro from "numbro";
+import * as moment from "moment-timezone"
 /**
  *  Connect with the bluzelle network API and RPC to get the data
  */
@@ -50,6 +51,57 @@ export class Api {
       },
     ];
     this.bondDenom = "ubnt";
+  }
+   /**
+   *  get latest block
+   */
+  async getLatestBlock(){
+   
+    let height = await this.getLatestBlockHeight();
+    let url = `https://${this.url}:${this.apiPort}/blocks/${height}`;
+    let data= (await axios.get(url)).data;
+    let format = "D MMM YYYY, h:mm:ssa z";
+    let timezone = moment.tz.guess()
+    let time = moment.utc(data.block.header.time);
+    let proposerHash=await this.getValidatorByProposerAddress(data.block.header.proposer_address)
+    let proposerAddressData=await this.getMoniker(proposerHash.pub_key.value)
+    return {
+      time:time.format(format),
+      hash:data.block_id.hash,
+      proposer:`[${proposerAddressData.description.moniker}](${this.bigDipperUrl}/validator/${proposerAddressData.operator_address})`,
+      transNum:data.block.data.txs?data.block.data.txs.length:0,
+      height:`[${height}](${this.bigDipperUrl}/blocks/${height})`
+    }
+              
+  }
+  /**
+   *  get bluzelle coin stats
+   */
+  async getCoinStats(){
+    let coinId = "bluzelle";
+    let url;
+        if (coinId){
+            try{
+                let now = new Date();
+                now.setMinutes(0);
+                url = "https://api.coingecko.com/api/v3/simple/price?ids="+coinId+"&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true";
+                let response =await axios.get(url);
+                if (response.status == 200){
+                    // console.log(JSON.parse(response.content));
+                    let data = response.data;
+                    data = data[coinId];
+                    // console.log(coinStats);
+                    return data
+                }
+            }
+            catch(e){
+                console.log(url);
+                console.log(e);
+            }
+        }
+        else{
+            return "No coingecko Id provided."
+        }
   }
   /**
    *  get consensus state from the rpc
@@ -140,9 +192,8 @@ export class Api {
     try {
       let response = await axios.get(url);
       let status = response.data;
-      return new Intl.NumberFormat("en-US").format(
-        status.result.sync_info.latest_block_height
-      );
+      return status.result.sync_info.latest_block_height
+    
     } catch (e) {
       return 0;
     }
@@ -170,7 +221,19 @@ export class Api {
     let activeVotingPower = activeVP;
     return activeVotingPower;
   }
-
+  /**
+   *  method to get validator by proposer address example 1DCD10379369E699622E5FF7DF27C999C4B4B31D
+   */
+  private async getValidatorByProposerAddress(proposerAddress:string) {
+    let url = `https://${this.url}:${this.rpcPort}/validators`;
+    try {
+      let response = await axios.get(url);
+      let status = response.data;
+      return status.result.validators.find(a=>a.address===proposerAddress);
+    } catch (e) {
+      return [];
+    }
+  }
   /**
    *  method to get validator detail by address
    */

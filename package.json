@@ -8,6 +8,7 @@
     "discord.js": "^13.0.0-dev.5ad83a6a65e5944ceb3a41fee2df40ba1f5b03e4",
     "discord.js-slash-command": "^1.2.1",
     "dotenv": "^10.0.0",
+    "moment-timezone": "^0.5.33",
     "node-schedule": "^2.0.0",
     "numbro": "^2.3.2",
     "numeral": "^2.0.6",

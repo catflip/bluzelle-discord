@@ -1,19 +1,21 @@
 import * as dotenv from "dotenv";
 // @ts-ignore
 dotenv.config({ path: `${__dirname}/.env.local` });
-import { Client, Message } from "discord.js";
+import { Client, Message, TextChannel } from "discord.js";
 import {
   averageBlockTime,
   consensusStateEmbed,
   helpMessage,
+  latestBlockEmbed,
+  marketDataEmbed,
   onlineVotingPowerEmbed,
+  runningEmbed,
   setScheduling,
   stopScheduling,
   totalBlocks,
   totalValidator,
   validatorByAddressEmbed,
 } from "./lib/interactions";
-import { Api } from "./lib/api";
 
 const client = new Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 const commandList = [
@@ -42,6 +44,18 @@ const commandList = [
     description: "get online voting power",
   },
   {
+    name: "latest-block",
+    description: "get latest block",
+  },
+  {
+    name: "market-data",
+    description: "get bluzelle coin market data",
+  },
+  {
+    name: "running",
+    description: "check which data is send periodically in this channel",
+  },
+  {
     name: "set",
     description: "send data periodically to channel",
     options: [
@@ -64,6 +78,22 @@ const commandList = [
             name: "block-times",
             value: "block-times",
           },
+          {
+            name: "consensus-state",
+            value: "consensus-state",
+          },
+          {
+            name: "online-voting-power",
+            value: "online-voting-power",
+          },
+          {
+            name: "latest-block",
+            value: "latest-block",
+          },
+          {
+            name: "market-data",
+            value: "market-data",
+          }, 
         ],
       },
       {
@@ -98,6 +128,7 @@ const commandList = [
     options: [
       {
         name: "data",
+        required:true,
         description:
           "the data that you want to send periodically to this channel",
         type: 3,
@@ -114,6 +145,22 @@ const commandList = [
             name: "block-times",
             value: "block-times",
           },
+          {
+            name: "consensus-state",
+            value: "consensus-state",
+          },
+          {
+            name: "online-voting-power",
+            value: "online-voting-power",
+          },
+          {
+            name: "latest-block",
+            value:     "latest-block",
+          },
+          {
+            name: "market-data",
+            value: "market-data",
+          }, 
         ],
       },
     ],
@@ -133,7 +180,7 @@ client.once("ready", async () => {
   // }
 });
 client.on("message", async (message: Message) => {
-  if (!client.application?.owner) {
+  if (message.member.permissions.has("ADMINISTRATOR")) {
     await client.application?.fetch();
     // await client.guilds.cache
     //   .get(process.env.GUILD_ID as any)
@@ -142,14 +189,16 @@ client.on("message", async (message: Message) => {
 
   if (
     message.content.toLowerCase() === "!deploy" &&
-    message.author.id === client.application?.owner?.id
+    message.member.permissions.has("ADMINISTRATOR")
   ) {
-    const command = await client.guilds.cache
+    await client.guilds.cache
       .get(process.env.GUILD_ID as any)
       ?.commands.set(commandList);
+      (client.channels.cache.get(message.channel.id) as TextChannel).send("command has been deployed");
   }
 });
 client.on("interaction", async (interaction) => {
+  console.log(interaction.member.permissions)
   if (interaction.isButton()) {
     switch (interaction.customID.split(":")[0]) {
       case "getvalidator":
@@ -166,8 +215,7 @@ client.on("interaction", async (interaction) => {
         });
         break;
     }
-    // console.log(interaction.customID)
-    // console.log(await api.getValidatorByAddress(interaction.customID));
+  
   }
   if (!interaction.isCommand()) return;
 
@@ -200,12 +248,29 @@ client.on("interaction", async (interaction) => {
       case "online-voting-power":
       await interaction.reply({ embeds: [await onlineVotingPowerEmbed()] });
       break;
+      case "latest-block":
+        await interaction.reply({ embeds: [await latestBlockEmbed()] });
+        break;
+        case "market-data":
+        await interaction.reply({ embeds: [await marketDataEmbed()] });
+        break;
+        case "running":
+          await interaction.reply({ embeds: [runningEmbed(periodic,interaction)] });
+          break;
     case "help":
       await interaction.reply({
         embeds: [helpMessage.embed],
         components: [helpMessage.row],
       });
       break;
+      default:
+        interaction.reply({
+          content: "can't find the command you looking for",
+          ephemeral: true,
+        });
+        break;
   }
 });
 client.login(process.env.DISCORD_TOKEN);
+
+  
