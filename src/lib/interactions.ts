@@ -365,7 +365,7 @@ it can report stats from bluzelle testnet and mainnet. Stats reported might incl
     new MessageButton()
       .setLabel("INVITE")
       .setStyle("LINK")
-      .setURL("https://discord.com/api/oauth2/authorize?client_id=861035739277688844&permissions=18432&scope=applications.commands%20bot")
+      .setURL((process.env.DISCORD_INVITE as string))
   ),
 };
 
