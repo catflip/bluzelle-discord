@@ -46,7 +46,7 @@ export default function Home(props: HomeProps) {
       </h3>
       <div className="grid grid-cols-2 gap-2">
         <Card
-          href={`https://discord.com/api/oauth2/authorize?client_id=861035739277688844&permissions=18432&scope=applications.commands%20bot`}
+          href={`${process.env.DISCORD_INVITE}`}
           description="Invite the bot"
           title="Invite"
         />

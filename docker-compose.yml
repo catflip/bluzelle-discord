@@ -8,6 +8,7 @@ services:
   nextjs-ui:
     build:
         context: ./discord-landing
+    env_file: .env.local
     ports:
         - "3000:3000"
     container_name: nextjs-ui
