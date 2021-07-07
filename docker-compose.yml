@@ -4,7 +4,7 @@ services:
     container_name: app
     restart: always
     build: .
-    env_file: ./src/.env.local
+    env_file: .env.local
   nextjs-ui:
     build:
         context: ./discord-landing
