@@ -17,5 +17,10 @@
   },
   "devDependencies": {
     "typescript": "^4.3.4"
+  },
+  "scripts": {
+    "dev": "ts-node src/index.ts",
+    "start": "ts-node dist/index.js",
+    "build": "tsc -p ."
   }
 }

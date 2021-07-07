@@ -77,8 +77,8 @@ export async function latestBlockEmbed(){
 }
 export function runningEmbed(periodList: Map<string, any>,interaction: CommandInteraction){
   
-  const listRunning=periodList.size>0&&periodList.get(interaction.guildID).get(interaction.channelID).size>0?periodList.get(interaction.guildID).get(interaction.channelID):new Map();
-  const fields:EmbedFieldData[]=Array.from(listRunning.keys()).map((a):EmbedFieldData=>({name:a.toString(),value:`stop with **/stop ${a}** and update with **/update ${a}**`}));
+  const listRunning=periodList.size>0&&periodList.get((interaction.guildID as string)).get(interaction.channelID).size>0?periodList.get((interaction.guildID as string)).get(interaction.channelID):new Map();
+  const fields:EmbedFieldData[]=Array.from(listRunning.keys()).map((a):EmbedFieldData=>({name:(a as any).toString(),value:`stop with **/stop ${a}** and update with **/update ${a}**`}));
   const embed = {
     color: 0x0099ff,
     author: {
@@ -237,7 +237,7 @@ export async function onlineVotingPowerEmbed() {
 }
 export async function consensusStateEmbed() {
   const api = new Api();
-  const {votingHeight,votingRound,votingStep,proposer,votedPower} = await api.getConsensusState();
+  const {votingHeight,votingRound,votingStep,proposer,votedPower}:any = await api.getConsensusState();
   const embed = {
     color: 0x0099ff,
     title:"Consensus State",
@@ -369,7 +369,7 @@ it can report stats from bluzelle testnet and mainnet. Stats reported might incl
   ),
 };
 
-async function sendEmbed(client: Client, channelID: `${bigint}`, embed) {
+async function sendEmbed(client: Client, channelID: `${bigint}`, embed:any) {
   let message: any = "sorry can't process message";
   switch (embed) {
     case "total-validator":
@@ -400,7 +400,7 @@ function scheduling(
   client: Client,
   interaction: CommandInteraction,
   milisecond: number,
-  embed
+  embed:any
 ) {
   return setInterval(
     () => sendEmbed(client, interaction.channelID, embed),
@@ -432,28 +432,28 @@ export async function setScheduling(
       break;
   }
   if (
-    periodList.has(interaction.guildID) &&
+    periodList.has((interaction.guildID as string)) &&
     periodList
-      .get(interaction.guildID)
+      .get((interaction.guildID as string))
       .has(interaction.channelID) && periodList
-      .get(interaction.guildID)
+      .get((interaction.guildID as string))
       .get(interaction.channelID).has(dataSwitch)
   ) {
     return await interaction.reply({
       content: `${dataSwitch} has been set, please use **/update** to update the time`,ephemeral:true
     });
   }
-  if (!periodList.has(interaction.guildID))
-    periodList.set(interaction.guildID, new Map());
-    if (!periodList.get(interaction.guildID).has(interaction.channelID))
-    periodList.get(interaction.guildID).set(interaction.channelID, new Map());
+  if (!periodList.has((interaction.guildID as string)))
+    periodList.set((interaction.guildID as string), new Map());
+    if (!periodList.get((interaction.guildID as string)).has(interaction.channelID))
+    periodList.get((interaction.guildID as string)).set(interaction.channelID, new Map());
     
   periodList
-    .get(interaction.guildID)
+    .get((interaction.guildID as string))
     .get(interaction.channelID)
     .set(
       dataSwitch,
-      scheduling(client, interaction, milisecond, dataSwitch)
+      scheduling(client, interaction, (milisecond as any), dataSwitch)
     );
 
   await interaction.reply({
@@ -467,20 +467,20 @@ export async function stopScheduling(
   dataSwitch: string | boolean | number
 ) {
   if (
-    periodList.has(interaction.guildID) &&
+    periodList.has((interaction.guildID as string)) &&
     periodList
-      .get(interaction.guildID)
+      .get((interaction.guildID as string))
       .get(interaction.channelID)
       .has(dataSwitch)
   ) {
     clearInterval(
       periodList
-      .get(interaction.guildID)
+      .get((interaction.guildID as string))
       .get(interaction.channelID)
       .get(dataSwitch)
     );
     periodList
-      .get(interaction.guildID)
+      .get((interaction.guildID as string))
       .get(interaction.channelID)
       .delete(dataSwitch)
     
@@ -519,28 +519,28 @@ export async function updateScheduling(
       break;
   }
   if (
-    periodList.has(interaction.guildID) &&
+    periodList.has((interaction.guildID as string)) &&
     periodList
-      .get(interaction.guildID)
+      .get((interaction.guildID as string))
       .get(interaction.channelID)
       .has(dataSwitch)
   ) {
     clearInterval(
       periodList
-      .get(interaction.guildID)
+      .get((interaction.guildID as string))
       .get(interaction.channelID)
       .get(dataSwitch)
     );
     periodList
-      .get(interaction.guildID)
+      .get((interaction.guildID as string))
       .get(interaction.channelID)
       .delete(dataSwitch)
       periodList
-      .get(interaction.guildID)
+      .get((interaction.guildID as string))
       .get(interaction.channelID)
       .set(
         dataSwitch,
-        scheduling(client, interaction, milisecond, dataSwitch)
+        scheduling(client, interaction, (milisecond as any), dataSwitch)
       );
     await interaction.reply({
       content: `${dataSwitch} has been updated`,ephemeral:true

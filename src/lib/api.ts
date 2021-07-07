@@ -138,7 +138,7 @@ export class Api {
   /**
    *  get delegator address from operator address
    */
-  getDelegator(operatorAddr) {
+  getDelegator(operatorAddr:any) {
     let address = bech32.decode(operatorAddr);
     return bech32.encode(this.bech32PrefixAccAddr, address.words);
   }
@@ -154,7 +154,7 @@ export class Api {
     try {
       let response = await axios.get(url);
       let result = response.data.validators;
-      result.forEach((validator) =>
+      result.forEach((validator:any) =>
         validatorSet.set(validator.consensus_pubkey.key, validator)
       );
     } catch (e) {
@@ -202,7 +202,7 @@ export class Api {
    *  method to get online voting power
    */
   public async getOnlineVotingPower() {
-    let validators = [];
+    let validators:any = [];
     let page = 0;
     let result;
     do {
@@ -229,7 +229,7 @@ export class Api {
     try {
       let response = await axios.get(url);
       let status = response.data;
-      return status.result.validators.find(a=>a.address===proposerAddress);
+      return status.result.validators.find((a:any)=>a.address===proposerAddress);
     } catch (e) {
       return [];
     }

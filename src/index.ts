@@ -248,7 +248,7 @@ client.once("ready", async () => {
   // }
 });
 client.on("message", async (message: Message) => {
-  if (message.member.permissions.has("ADMINISTRATOR")) {
+  if (message?.member?.permissions.has("ADMINISTRATOR")) {
     await client.application?.fetch();
     // await client.guilds.cache
     //   .get(process.env.GUILD_ID as any)
@@ -257,7 +257,7 @@ client.on("message", async (message: Message) => {
 
   if (
     message.content.toLowerCase() === "!deploy" &&
-    message.member.permissions.has("ADMINISTRATOR")
+    message?.member?.permissions.has("ADMINISTRATOR")
   ) {
     await client.guilds.cache
       .get(process.env.GUILD_ID as any)
@@ -289,21 +289,21 @@ client.on("interaction", async (interaction) => {
 
   switch (interaction.commandName) {
     case "stop":
-      if(!(interaction.member.permissions as Permissions).has("ADMINISTRATOR")) return  await interaction.reply({content:"sorry you can't use this command only admin can use this command",ephemeral:true});
-      const dataSwitchStop = interaction.options.get("data").value;
-      stopScheduling(periodic, interaction, dataSwitchStop);
+      if(!(interaction?.member?.permissions as Permissions).has("ADMINISTRATOR")) return  await interaction.reply({content:"sorry you can't use this command only admin can use this command",ephemeral:true});
+      const dataSwitchStop = interaction?.options?.get("data")?.value;
+      stopScheduling(periodic, interaction, (dataSwitchStop as any));
       break;
       case "update":
-      if(!(interaction.member.permissions as Permissions).has("ADMINISTRATOR")) return await interaction.reply({content:"sorry you can't use this command only admin can use this command",ephemeral:true});
-      const dataSwitchUpdate = interaction.options.get("data").value;
-      const timeUpdate = interaction.options.get("time").value;
-      updateScheduling(periodic, dataSwitchUpdate, client, interaction, timeUpdate.toString());
+      if(!(interaction?.member?.permissions as Permissions).has("ADMINISTRATOR")) return await interaction.reply({content:"sorry you can't use this command only admin can use this command",ephemeral:true});
+      const dataSwitchUpdate = interaction?.options?.get("data")?.value;
+      const timeUpdate = interaction?.options?.get("time")?.value;
+      updateScheduling(periodic, (dataSwitchUpdate as any), client, interaction, (timeUpdate as any).toString());
       break;
     case "set":
-      if(!(interaction.member.permissions as Permissions).has("ADMINISTRATOR")) return await interaction.reply({content:"sorry you can't use this command only admin can use this command",ephemeral:true});
-      const dataSwitch = interaction.options.get("data").value;
-      const time = interaction.options.get("time").value;
-      setScheduling(periodic, dataSwitch, client, interaction, time.toString());
+      if(!(interaction?.member?.permissions as Permissions).has("ADMINISTRATOR")) return await interaction.reply({content:"sorry you can't use this command only admin can use this command",ephemeral:true});
+      const dataSwitch = interaction?.options?.get("data")?.value;
+      const time = interaction?.options?.get("time")?.value;
+      setScheduling(periodic, (dataSwitch as any), client, interaction, (time as any).toString());
 
       break;
     case "total-validator":
@@ -331,7 +331,7 @@ client.on("interaction", async (interaction) => {
         await interaction.reply({ embeds: [await marketDataEmbed()] });
         break;
         case "running":
-          if(!(interaction.member.permissions as Permissions).has("ADMINISTRATOR")) return  await interaction.reply({content:"sorry you can't use this command only admin can use this command",ephemeral:true});
+          if(!(interaction?.member?.permissions as Permissions).has("ADMINISTRATOR")) return  await interaction.reply({content:"sorry you can't use this command only admin can use this command",ephemeral:true});
           await interaction.reply({ embeds: [runningEmbed(periodic,interaction)] });
           break;
     case "help":
