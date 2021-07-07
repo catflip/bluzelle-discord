@@ -4,8 +4,7 @@ import {
   MessageActionRow,
   MessageButton,
   TextChannel,
-  MessageEmbed,
-  EmbedFieldData
+   EmbedFieldData
 } from "discord.js";
 import * as numeral from "numeral"
 import * as numbro from "numbro"
@@ -326,6 +325,38 @@ it can report stats from bluzelle testnet and mainnet. Stats reported might incl
         name: "/block-times",
         value: "average block times",
       },
+      {
+        name: "/consensus-state",
+        value: "get consensus state",
+      },
+      {
+        name: "/latest-block",
+        value: "get latest block",
+      },
+      {
+        name: "/market-data",
+        value: "get price of BLZ token",
+      },
+      {
+        name: "/online-voting-power",
+        value: "get online voting power",
+      },
+      {
+        name: "/running",
+        value: "get which command has been set to send periodically (ADMIN ONLY)",
+      },
+      {
+        name: "/set",
+        value: "set which command that can be set to send periodically (ADMIN ONLY)",
+      },
+      {
+        name: "/stop",
+        value: "stop which command that has been set to send periodically (ADMIN ONLY)",
+      },
+      {
+        name: "/update",
+        value: "update which command that has been set to send periodically (ADMIN ONLY)",
+      },
     ],
 
     timestamp: new Date(),
@@ -334,7 +365,7 @@ it can report stats from bluzelle testnet and mainnet. Stats reported might incl
     new MessageButton()
       .setLabel("INVITE")
       .setStyle("LINK")
-      .setURL("https://google.com")
+      .setURL("https://discord.com/api/oauth2/authorize?client_id=861035739277688844&permissions=18432&scope=applications.commands%20bot")
   ),
 };
 
@@ -409,7 +440,7 @@ export async function setScheduling(
       .get(interaction.channelID).has(dataSwitch)
   ) {
     return await interaction.reply({
-      content: `${dataSwitch} has been set, please use **/update** to update the time`,
+      content: `${dataSwitch} has been set, please use **/update** to update the time`,ephemeral:true
     });
   }
   if (!periodList.has(interaction.guildID))
@@ -426,7 +457,7 @@ export async function setScheduling(
     );
 
   await interaction.reply({
-    content: `${dataSwitch} has been set, please use **/update** to update the time and **/stop** to stop the data`,
+    content: `${dataSwitch} has been set, please use **/update** to update the time and **/stop** to stop the data`,ephemeral:true
   });
 }
 
@@ -454,12 +485,70 @@ export async function stopScheduling(
       .delete(dataSwitch)
     
     await interaction.reply({
-      content: `${dataSwitch} has been stopped, please use **/set** to set it again`,
+      content: `${dataSwitch} has been stopped, please use **/set** to set it again`,ephemeral:true
     });
   } else {
     
     await interaction.reply({
-      content: `${dataSwitch} is not set, set it using **/set** command`,
+      content: `${dataSwitch} is not set, set it using **/set** command`,ephemeral:true
+    });
+  }
+}
+
+export async function updateScheduling(
+  periodList: Map<string, any>,
+  dataSwitch: string | number | boolean,
+  client: Client,
+  interaction: CommandInteraction,
+  time: string
+) {
+  let milisecond;
+
+  switch (time) {
+    case "daily":
+      milisecond = 86400000;
+      break;
+    case "hourly":
+      milisecond = 3600000;
+      break;
+    case "minutely":
+      milisecond = 60000;
+      break;
+    case "secondly":
+      milisecond = 5000;
+      break;
+  }
+  if (
+    periodList.has(interaction.guildID) &&
+    periodList
+      .get(interaction.guildID)
+      .get(interaction.channelID)
+      .has(dataSwitch)
+  ) {
+    clearInterval(
+      periodList
+      .get(interaction.guildID)
+      .get(interaction.channelID)
+      .get(dataSwitch)
+    );
+    periodList
+      .get(interaction.guildID)
+      .get(interaction.channelID)
+      .delete(dataSwitch)
+      periodList
+      .get(interaction.guildID)
+      .get(interaction.channelID)
+      .set(
+        dataSwitch,
+        scheduling(client, interaction, milisecond, dataSwitch)
+      );
+    await interaction.reply({
+      content: `${dataSwitch} has been updated`,ephemeral:true
+    });
+  } else {
+    
+    await interaction.reply({
+      content: `${dataSwitch} is not set, set it using **/set** command`,ephemeral:true
     });
   }
 }

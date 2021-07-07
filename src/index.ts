@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 // @ts-ignore
 dotenv.config({ path: `${__dirname}/.env.local` });
-import { Client, Message, TextChannel } from "discord.js";
+import { Client, Message, Permissions, TextChannel } from "discord.js";
 import {
   averageBlockTime,
   consensusStateEmbed,
@@ -14,6 +14,7 @@ import {
   stopScheduling,
   totalBlocks,
   totalValidator,
+  updateScheduling,
   validatorByAddressEmbed,
 } from "./lib/interactions";
 
@@ -53,11 +54,78 @@ const commandList = [
   },
   {
     name: "running",
-    description: "check which data is send periodically in this channel",
+    description: "check which data is send periodically in this channel (ADMIN ONLY)",
   },
   {
     name: "set",
-    description: "send data periodically to channel",
+    description: "send data periodically to channel (ADMIN ONLY)",
+    options: [
+      {
+        name: "data",
+        description:
+          "the data that you want to send periodically to this channel",
+        type: 3,
+        required: true,
+        choices: [
+          {
+            name: "total-validator",
+            value: "total-validator",
+          },
+          {
+            name: "total-blocks",
+            value: "total-blocks",
+          },
+          {
+            name: "block-times",
+            value: "block-times",
+          },
+          {
+            name: "consensus-state",
+            value: "consensus-state",
+          },
+          {
+            name: "online-voting-power",
+            value: "online-voting-power",
+          },
+          {
+            name: "latest-block",
+            value: "latest-block",
+          },
+          {
+            name: "market-data",
+            value: "market-data",
+          }, 
+        ],
+      },
+      {
+        name: "time",
+        description: "what time should the data be sent",
+        type: 3,
+        required: true,
+        choices: [
+          {
+            name: "daily",
+            value: "daily",
+          },
+          {
+            name: "hourly",
+            value: "hourly",
+          },
+          {
+            name: "minutely",
+            value: "minutely",
+          },
+          {
+            name: "secondly",
+            value: "secondly",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: "update",
+    description: "send data periodically to channel (ADMIN ONLY)",
     options: [
       {
         name: "data",
@@ -124,7 +192,7 @@ const commandList = [
   },
   {
     name: "stop",
-    description: "stop sending data periodically to a channel",
+    description: "stop sending data periodically to a channel (ADMIN ONLY)",
     options: [
       {
         name: "data",
@@ -198,7 +266,7 @@ client.on("message", async (message: Message) => {
   }
 });
 client.on("interaction", async (interaction) => {
-  console.log(interaction.member.permissions)
+  
   if (interaction.isButton()) {
     switch (interaction.customID.split(":")[0]) {
       case "getvalidator":
@@ -221,10 +289,18 @@ client.on("interaction", async (interaction) => {
 
   switch (interaction.commandName) {
     case "stop":
+      if(!(interaction.member.permissions as Permissions).has("ADMINISTRATOR")) return  await interaction.reply({content:"sorry you can't use this command only admin can use this command",ephemeral:true});
       const dataSwitchStop = interaction.options.get("data").value;
       stopScheduling(periodic, interaction, dataSwitchStop);
       break;
+      case "update":
+      if(!(interaction.member.permissions as Permissions).has("ADMINISTRATOR")) return await interaction.reply({content:"sorry you can't use this command only admin can use this command",ephemeral:true});
+      const dataSwitchUpdate = interaction.options.get("data").value;
+      const timeUpdate = interaction.options.get("time").value;
+      updateScheduling(periodic, dataSwitchUpdate, client, interaction, timeUpdate.toString());
+      break;
     case "set":
+      if(!(interaction.member.permissions as Permissions).has("ADMINISTRATOR")) return await interaction.reply({content:"sorry you can't use this command only admin can use this command",ephemeral:true});
       const dataSwitch = interaction.options.get("data").value;
       const time = interaction.options.get("time").value;
       setScheduling(periodic, dataSwitch, client, interaction, time.toString());
@@ -255,6 +331,7 @@ client.on("interaction", async (interaction) => {
         await interaction.reply({ embeds: [await marketDataEmbed()] });
         break;
         case "running":
+          if(!(interaction.member.permissions as Permissions).has("ADMINISTRATOR")) return  await interaction.reply({content:"sorry you can't use this command only admin can use this command",ephemeral:true});
           await interaction.reply({ embeds: [runningEmbed(periodic,interaction)] });
           break;
     case "help":
