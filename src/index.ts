@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 // @ts-ignore
-dotenv.config({ path: `${__dirname}/.env.local` });
+dotenv.config();
 import { Client, Message, Permissions, TextChannel } from "discord.js";
 import {
   averageBlockTime,

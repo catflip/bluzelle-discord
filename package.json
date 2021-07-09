@@ -19,6 +19,7 @@
   "devDependencies": {
     "typescript": "^4.3.4"
   },
+  "main":"dist/index",
   "scripts": {
     "dev": "ts-node src/index.ts",
     "start": "ts-node dist/index.js",

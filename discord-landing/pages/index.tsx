@@ -44,9 +44,10 @@ export default function Home(props: HomeProps) {
       >
        Bluzelle discord bot is a bot in discord that can send data from bluzelle network straight to discord
       </h3>
+      {`sadsadsa ${config.discord_invite}`}
       <div className="grid grid-cols-2 gap-2">
         <Card
-          href={`${process.env.DISCORD_INVITE}`}
+          href={config.discord_invite}
           description="Invite the bot"
           title="Invite"
         />

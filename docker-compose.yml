@@ -1,14 +1,14 @@
 version: "3.7"
 services:
-  app:
-    container_name: app
-    restart: always
-    build: .
-    env_file: .env.local
+  # app:
+  #   container_name: app
+  #   build: .
+  #   env_file: .env
   nextjs-ui:
     build:
         context: ./discord-landing
-    env_file: .env.local
+        args:
+          - DISCORD_INVITE=${DISCORD_INVITE}
     ports:
         - "3000:3000"
     container_name: nextjs-ui
