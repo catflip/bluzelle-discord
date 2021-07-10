@@ -2,10 +2,6 @@ export function Card({
   title,
   description,
   href,
-}: {
-  href?: string;
-  description: string;
-  title: string;
 }) {
   const content = (
     <div className="p-5 flex items-center justify-center bg-gray-50 rounded-md flex-1 hover:bg-gray-100">
