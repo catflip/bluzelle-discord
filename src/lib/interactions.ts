@@ -310,27 +310,32 @@ it can report stats from bluzelle testnet and mainnet. Stats reported might incl
           "the first time you get this bot as an admin you must issue this command to deploy the slash command",
       },
       {
+        name: "!undeploy",
+        value:
+          "remove slash command from your guild/server",
+      },
+      {
         name: "/help",
         value: "to get list of command",
       },
       {
-        name: "/total-validator",
+        name: "/total-validator [network]",
         value: "total number of validator",
       },
       {
-        name: "/total-block",
+        name: "/total-block [network]",
         value: "total number of block",
       },
       {
-        name: "/block-times",
+        name: "/block-times [network]",
         value: "average block times",
       },
       {
-        name: "/consensus-state",
+        name: "/consensus-state [network]",
         value: "get consensus state",
       },
       {
-        name: "/latest-block",
+        name: "/latest-block [network]",
         value: "get latest block",
       },
       {
@@ -338,7 +343,7 @@ it can report stats from bluzelle testnet and mainnet. Stats reported might incl
         value: "get price of BLZ token",
       },
       {
-        name: "/online-voting-power",
+        name: "/online-voting-power [network]",
         value: "get online voting power",
       },
       {
@@ -346,15 +351,15 @@ it can report stats from bluzelle testnet and mainnet. Stats reported might incl
         value: "get which command has been set to send periodically (ADMIN ONLY)",
       },
       {
-        name: "/set",
-        value: "set which command that can be set to send periodically (ADMIN ONLY)",
+        name: "/send-data [data] [time] [per] [network]",
+        value: "send data periodically (ADMIN ONLY)",
       },
       {
-        name: "/stop",
+        name: "/stop [data]",
         value: "stop which command that has been set to send periodically (ADMIN ONLY)",
       },
       {
-        name: "/update",
+        name: "/update [data] [time] [per] [network]",
         value: "update which command that has been set to send periodically (ADMIN ONLY)",
       },
     ],
@@ -365,7 +370,11 @@ it can report stats from bluzelle testnet and mainnet. Stats reported might incl
     new MessageButton()
       .setLabel("INVITE")
       .setStyle("LINK")
-      .setURL((process.env.DISCORD_INVITE as string))
+      .setURL((process.env.DISCORD_INVITE as string)),
+      new MessageButton()
+      .setLabel("COMMAND LIST")
+      .setStyle("LINK")
+      .setURL(`${(process.env.WEBSITE as string) || "http://localhost:3000"}/commands`)
   ),
 };
 

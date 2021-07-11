@@ -68,3 +68,220 @@ export const consensusStateMessage=(height:number,round:number,step:number,propo
   **Voting Power**: ${voting_power}
   `
 }
+
+export const commandList = [
+  {
+    name: "help",
+    description: "Get all of the command that you can send to discord bot",
+  },
+  {
+    name: "total-validator",
+    description: "total number of validator",
+  },
+  {
+    name: "total-block",
+    description: "total number of block",
+  },
+  {
+    name: "block-times",
+    description: "average block times",
+  },
+  {
+    name: "consensus-state",
+    description: "get consensus state",
+  },
+  {
+    name: "online-voting-power",
+    description: "get online voting power",
+  },
+  {
+    name: "latest-block",
+    description: "get latest block",
+  },
+  {
+    name: "market-data",
+    description: "get bluzelle coin market data",
+  },
+  {
+    name: "running",
+    description:
+      "check which data is send periodically in this channel (ADMIN ONLY)",
+  },
+  {
+    name: "set",
+    description: "send data periodically to channel (ADMIN ONLY)",
+    options: [
+      {
+        name: "data",
+        description:
+          "the data that you want to send periodically to this channel",
+        type: 3,
+        required: true,
+        choices: [
+          {
+            name: "total-validator",
+            value: "total-validator",
+          },
+          {
+            name: "total-blocks",
+            value: "total-blocks",
+          },
+          {
+            name: "block-times",
+            value: "block-times",
+          },
+          {
+            name: "consensus-state",
+            value: "consensus-state",
+          },
+          {
+            name: "online-voting-power",
+            value: "online-voting-power",
+          },
+          {
+            name: "latest-block",
+            value: "latest-block",
+          },
+          {
+            name: "market-data",
+            value: "market-data",
+          },
+        ],
+      },
+      {
+        name: "time",
+        description: "what time should the data be sent",
+        type: 3,
+        required: true,
+        choices: [
+          {
+            name: "daily",
+            value: "daily",
+          },
+          {
+            name: "hourly",
+            value: "hourly",
+          },
+          {
+            name: "minutely",
+            value: "minutely",
+          },
+          {
+            name: "secondly",
+            value: "secondly",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: "update",
+    description: "send data periodically to channel (ADMIN ONLY)",
+    options: [
+      {
+        name: "data",
+        description:
+          "the data that you want to send periodically to this channel",
+        type: 3,
+        required: true,
+        choices: [
+          {
+            name: "total-validator",
+            value: "total-validator",
+          },
+          {
+            name: "total-blocks",
+            value: "total-blocks",
+          },
+          {
+            name: "block-times",
+            value: "block-times",
+          },
+          {
+            name: "consensus-state",
+            value: "consensus-state",
+          },
+          {
+            name: "online-voting-power",
+            value: "online-voting-power",
+          },
+          {
+            name: "latest-block",
+            value: "latest-block",
+          },
+          {
+            name: "market-data",
+            value: "market-data",
+          },
+        ],
+      },
+      {
+        name: "time",
+        description: "what time should the data be sent",
+        type: 3,
+        required: true,
+        choices: [
+          {
+            name: "daily",
+            value: "daily",
+          },
+          {
+            name: "hourly",
+            value: "hourly",
+          },
+          {
+            name: "minutely",
+            value: "minutely",
+          },
+          {
+            name: "secondly",
+            value: "secondly",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: "stop",
+    description: "stop sending data periodically to a channel (ADMIN ONLY)",
+    options: [
+      {
+        name: "data",
+        required: true,
+        description:
+          "the data that you want to send periodically to this channel",
+        type: 3,
+        choices: [
+          {
+            name: "total-validator",
+            value: "total-validator",
+          },
+          {
+            name: "total-blocks",
+            value: "total-blocks",
+          },
+          {
+            name: "block-times",
+            value: "block-times",
+          },
+          {
+            name: "consensus-state",
+            value: "consensus-state",
+          },
+          {
+            name: "online-voting-power",
+            value: "online-voting-power",
+          },
+          {
+            name: "latest-block",
+            value: "latest-block",
+          },
+          {
+            name: "market-data",
+            value: "market-data",
+          },
+        ],
+      },
+    ],
+  },
+];
