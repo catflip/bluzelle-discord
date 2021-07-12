@@ -4,6 +4,7 @@
     "@types/node": "^15.12.4",
     "axios": "^0.21.1",
     "bech32": "^2.0.0",
+    "cheerio": "^1.0.0-rc.10",
     "discord-slash-commands-client": "^1.2.1",
     "discord.js": "^13.0.0-dev.5ad83a6a65e5944ceb3a41fee2df40ba1f5b03e4",
     "discord.js-slash-command": "^1.2.1",
@@ -19,7 +20,7 @@
   "devDependencies": {
     "typescript": "^4.3.4"
   },
-  "main":"dist/index",
+  "main": "dist/index",
   "scripts": {
     "dev": "ts-node src/index.ts",
     "start": "ts-node dist/index.js",

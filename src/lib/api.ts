@@ -1,8 +1,9 @@
 import axios from "axios";
 import { bech32 } from "bech32";
-import * as numeral from "numeral";
-import * as numbro from "numbro";
+import numeral from "numeral";
+import numbro from "numbro";
 import * as moment from "moment-timezone";
+import cheerio from "cheerio";
 /**
  *  Connect with the bluzelle network API and RPC to get the data
  */
@@ -52,21 +53,21 @@ export class Api {
     this.fullUrlApi = `${this.protocol}://${this.url}:${this.apiPort}`;
     this.fullUrlRpc = `${this.protocol}://${this.url}:${this.rpcPort}`;
   }
-  /**
-   *  to set the network to  mainnet
-   */
-  setMainnet() {
-    this.url = "sandbox.sentry.net.bluzelle.com";
-    this.bigDipperUrl = "https://bigdipper.net.bluzelle.com";
-    this.fullUrlApi = `${this.protocol}://${this.url}:${this.apiPort}`;
-    this.fullUrlRpc = `http://${this.url}:${this.rpcPort}`;
-  }
+  // /**
+  //  *  to set the network to  mainnet
+  //  */
+  // setMainnet() {
+  //   this.url = "sandbox.sentry.net.bluzelle.com";
+  //   this.bigDipperUrl = "https://bigdipper.net.bluzelle.com";
+  //   this.fullUrlApi = `${this.protocol}://${this.url}:${this.apiPort}`;
+  //   this.fullUrlRpc = `http://${this.url}:${this.rpcPort}`;
+  // }
   /**
    *  get latest block
    */
   async getLatestBlock() {
     let height = await this.getLatestBlockHeight();
-    let url = `https://${this.url}:${this.apiPort}/blocks/${height}`;
+    let url = `${this.fullUrlApi}/blocks/${height}`;
     let data = (await axios.get(url)).data;
     let format = "D MMM YYYY, h:mm:ssa z";
     let timezone = moment.tz.guess();
@@ -76,6 +77,7 @@ export class Api {
     );
     let proposerAddressData = await this.getMoniker(proposerHash.pub_key.value);
     return {
+      
       time: time.format(format),
       hash: data.block_id.hash,
       proposer: `[${proposerAddressData.description.moniker}](${this.bigDipperUrl}/validator/${proposerAddressData.operator_address})`,
@@ -117,7 +119,7 @@ export class Api {
    *  get consensus state from the rpc
    */
   async getConsensusState() {
-    const url: string = `https://${this.url}:${this.rpcPort}/dump_consensus_state`;
+    const url: string = `${this.fullUrlRpc}/dump_consensus_state`;
 
     try {
       let response = await axios.get(url);
@@ -131,14 +133,16 @@ export class Api {
           consensus.round_state.votes[round].prevotes_bit_array.split(" ")[3]
         ) * 100
       );
+      let proposerAddressData=await this.getMoniker(
+        consensus.round_state.validators.proposer.pub_key.value
+      )
       return {
+        image:await this.getValidatorProfileUrl(proposerAddressData.description.identity),
         votingHeight: height,
         votingRound: round,
         votingStep: step,
         votedPower: votedPower,
-        proposer: await this.getMoniker(
-          consensus.round_state.validators.proposer.pub_key.value
-        ),
+        proposer: proposerAddressData,
       };
     } catch (e) {
       console.log(url);
@@ -159,7 +163,7 @@ export class Api {
     let validatorSet = new Map();
     // get latest validator candidate information
 
-    let url = `https://${this.url}:${this.apiPort}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200&pagination.count_total=true`;
+    let url = `${this.fullUrlApi}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200&pagination.count_total=true`;
 
     try {
       let response = await axios.get(url);
@@ -174,6 +178,25 @@ export class Api {
 
     return validatorSet.has(pubkey) ? validatorSet.get(pubkey) : {};
   }
+  public async getValidatorProfileUrl(identity){
+    if (identity.length == 16){
+        let response = await axios.get(`https://keybase.io/_/api/1.0/user/lookup.json?key_suffix=${identity}&fields=pictures`)
+        if (response.status == 200) {
+            let them = response?.data?.them
+            return them && them.length && them[0]?.pictures && them[0]?.pictures?.primary && them[0]?.pictures?.primary?.url;
+        } else {
+            console.log(JSON.stringify(response))
+        }
+    } else if (identity.indexOf("keybase.io/team/")>0){
+        let teamPage = await axios.get(identity);
+        if (teamPage.status == 200){
+            let page = cheerio.load(teamPage.data);
+            return page(".kb-main-card img").attr('src');
+        } else {
+            console.log(JSON.stringify(teamPage))
+        }
+    }
+}
   /**
    *  method to get validator
    */
@@ -181,7 +204,7 @@ export class Api {
     let validatorSet = [];
     // get latest validator candidate information
 
-    let url = `https://${this.url}:${this.apiPort}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200&pagination.count_total=true`;
+    let url= `${this.fullUrlApi}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200&pagination.count_total=true`;
 
     try {
       let response = await axios.get(url);
@@ -198,7 +221,7 @@ export class Api {
    *  method to get latest block height
    */
   public async getLatestBlockHeight() {
-    let url = `https://${this.url}:${this.rpcPort}/status`;
+    let url = `${this.fullUrlRpc}/status`;
     try {
       let response = await axios.get(url);
       let status = response.data;
@@ -215,9 +238,7 @@ export class Api {
     let page = 0;
     let result;
     do {
-      const url = `https://${this.url}:${
-        this.rpcPort
-      }/validators?page=${++page}&per_page=100`;
+      const url = `${this.fullUrlRpc}/validators?page=${++page}&per_page=100`;
       let response = await axios.get(url);
       result = response.data.result;
       validators = [...validators, ...result.validators];
@@ -234,7 +255,7 @@ export class Api {
    *  method to get validator by proposer address example 1DCD10379369E699622E5FF7DF27C999C4B4B31D
    */
   private async getValidatorByProposerAddress(proposerAddress: string) {
-    let url = `https://${this.url}:${this.rpcPort}/validators`;
+    let url = `${this.fullUrlRpc}/validators`;
     try {
       let response = await axios.get(url);
       let status = response.data;
@@ -249,7 +270,7 @@ export class Api {
    *  method to get validator detail by address
    */
   public async getValidatorByAddress(address: string) {
-    let url = `https://${this.url}:${this.apiPort}/cosmos/staking/v1beta1/validators/${address}`;
+    let url = `${this.fullUrlApi}/cosmos/staking/v1beta1/validators/${address}`;
     try {
       let response = await axios.get(url);
       let status = response.data;
@@ -267,7 +288,7 @@ export class Api {
       notBondedTokens: 0,
     };
     try {
-      let url = `https://${this.url}:${this.apiPort}/cosmos/staking/v1beta1/pool`;
+      let url = `${this.fullUrlApi}/cosmos/staking/v1beta1/pool`;
       let response = await axios.get(url);
       let bonding = response.data.pool;
       chainStates.bondedTokens = parseInt(bonding.bonded_tokens);
@@ -281,7 +302,7 @@ export class Api {
     let StakingCoin = this.coins.find((coin) => coin.denom === this.bondDenom);
     try {
       let url =
-        `https://${this.url}:${this.apiPort}/cosmos/bank/v1beta1/supply/` +
+        `${this.fullUrlApi}/cosmos/bank/v1beta1/supply/` +
         StakingCoin.denom;
       let response = await axios.get(url);
       let supply = response.data;
@@ -294,7 +315,8 @@ export class Api {
     let StakingCoin = this.coins.find((coin) => coin.denom === this.bondDenom);
 
     return {
-      percentage: numeral(
+      // @ts-ignore
+      percentage: numbro(
         (await this.getBondedToken()).bondedTokens /
           (await this.getTotalSupply())
       ).format("0.00%"),
@@ -308,7 +330,7 @@ export class Api {
    *  method to get block time
    */
   public async getAverageBlockTime() {
-    const rpcUrl = `https://${this.url}:${this.rpcPort}/status`;
+    const rpcUrl = `${this.fullUrlRpc}/status`;
     const rpcData = await axios.get(rpcUrl);
     const latestBlockHeight = rpcData.data.result.sync_info.latest_block_height;
     const latestBlockTime = rpcData.data.result.sync_info.latest_block_time;

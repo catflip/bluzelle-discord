@@ -114,12 +114,14 @@ client.on("interaction", async (interaction) => {
         });
       const dataSwitchUpdate = interaction?.options?.get("data")?.value;
       const timeUpdate = interaction?.options?.get("time")?.value;
+      const perUpdate = interaction?.options?.get("per")?.value;
       updateScheduling(
         periodic,
         dataSwitchUpdate as any,
         client,
         interaction,
-        (timeUpdate as any).toString()
+        (timeUpdate as number),
+        (perUpdate as string)
       );
       break;
     case "set":
@@ -132,18 +134,20 @@ client.on("interaction", async (interaction) => {
           ephemeral: true,
         });
       const dataSwitch = interaction?.options?.get("data")?.value;
-      const time = interaction?.options?.get("time")?.value;
+      const timeSet = interaction?.options?.get("time")?.value;
+      const perSet = interaction?.options?.get("per")?.value;
       setScheduling(
         periodic,
         dataSwitch as any,
         client,
         interaction,
-        (time as any).toString()
+        (timeSet as number),
+        (perSet as string)
       );
 
       break;
     case "total-validator":
-      await interaction.reply({ embeds: [await totalValidator()] });
+            await interaction.reply({ embeds: [await totalValidator()] });
       break;
     case "total-block":
       await interaction.reply({ embeds: [await totalBlocks()] });

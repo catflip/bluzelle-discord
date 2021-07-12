@@ -7,10 +7,12 @@ import {
    EmbedFieldData
 } from "discord.js";
 import * as numeral from "numeral"
-import * as numbro from "numbro"
+import numbro from "numbro"
 import { Api } from "./api";
 export async function totalValidator() {
   const api = new Api();
+  
+  
   const totalValidator = await api.getValidator();
   const embed = {
     color: 0x0099ff,
@@ -38,6 +40,7 @@ export async function totalValidator() {
 }
 export async function latestBlockEmbed(){
   const api = new Api();
+  
   const latestBlock = await api.getLatestBlock();
   const embed = {
     color: 0x0099ff,
@@ -96,6 +99,7 @@ export function runningEmbed(periodList: Map<string, any>,interaction: CommandIn
 }
 export async function marketDataEmbed(){
   const api = new Api();
+  
   const marketData = await api.getCoinStats();
   const embed = {
     color: 0x0099ff,
@@ -109,7 +113,7 @@ export async function marketDataEmbed(){
     fields: [
       {
         name: "Price",
-        value: `${marketData.usd}`,
+        value: `$${marketData.usd}`,
       },
       {
         name: "Market Cap",
@@ -126,6 +130,7 @@ export async function marketDataEmbed(){
 export async function validatorByAddressEmbed(address:string) {
 
   const api = new Api();
+  
   const {validator:validatorInfo} = await api.getValidatorByAddress(address);
   
   const embed = {
@@ -166,6 +171,7 @@ export async function validatorByAddressEmbed(address:string) {
 }
 export async function totalBlocks() {
   const api = new Api();
+  
   const totalBlock = await api.getLatestBlockHeight();
   const embed = {
     color: 0x0099ff,
@@ -190,6 +196,7 @@ export async function totalBlocks() {
 }
 export async function averageBlockTime() {
   const api = new Api();
+  
   const blockTimes = await api.getAverageBlockTime();
   const embed = {
     color: 0x0099ff,
@@ -212,6 +219,7 @@ export async function averageBlockTime() {
 }
 export async function onlineVotingPowerEmbed() {
   const api = new Api();
+  
   const onlineVotingPower = await api.getOnlineVotingPower();
   const percentageAndTotalStake=await api.getPercentageAndTotalStake();
   const embed = {
@@ -225,7 +233,7 @@ export async function onlineVotingPowerEmbed() {
     fields: [
       {
         name: "Online Voting Power (Now)",
-        value: `${numeral(onlineVotingPower).format('0,0.00a')}
+        value: `${numbro(onlineVotingPower).format('0,0.00a')}
         ${percentageAndTotalStake.percentage} from ${percentageAndTotalStake.totalStake}
         `,
       },
@@ -237,7 +245,8 @@ export async function onlineVotingPowerEmbed() {
 }
 export async function consensusStateEmbed() {
   const api = new Api();
-  const {votingHeight,votingRound,votingStep,proposer,votedPower}:any = await api.getConsensusState();
+  
+  const {votingHeight,votingRound,votingStep,proposer,votedPower,image} = await api.getConsensusState();
   const embed = {
     color: 0x0099ff,
     title:"Consensus State",
@@ -274,10 +283,10 @@ export async function consensusStateEmbed() {
         
       },
     ],
-
+image:{url:image},
     timestamp: new Date(),
   };
-  
+
   const row = new MessageActionRow()
 			.addComponents(
 				new MessageButton()
@@ -292,7 +301,7 @@ export const helpMessage = {
   embed: {
     color: 0x0099ff,
     description: `A bot that is able to push updates to the Bluzelle Discord channel, reporting relevant statistics gathered from configured networks.
-it can report stats from bluzelle testnet and mainnet. Stats reported might include things like # of validators, # of blocks, block times, etc.`,
+it can report stats from bluzelle testnet only. Stats reported might include things like # of validators, # of blocks, block times, etc.`,
     author: {
       name: "Bluzelle bot",
       icon_url:
@@ -319,23 +328,23 @@ it can report stats from bluzelle testnet and mainnet. Stats reported might incl
         value: "to get list of command",
       },
       {
-        name: "/total-validator [network]",
+        name: "/total-validator",
         value: "total number of validator",
       },
       {
-        name: "/total-block [network]",
+        name: "/total-block",
         value: "total number of block",
       },
       {
-        name: "/block-times [network]",
+        name: "/block-times",
         value: "average block times",
       },
       {
-        name: "/consensus-state [network]",
+        name: "/consensus-state",
         value: "get consensus state",
       },
       {
-        name: "/latest-block [network]",
+        name: "/latest-block",
         value: "get latest block",
       },
       {
@@ -343,7 +352,7 @@ it can report stats from bluzelle testnet and mainnet. Stats reported might incl
         value: "get price of BLZ token",
       },
       {
-        name: "/online-voting-power [network]",
+        name: "/online-voting-power",
         value: "get online voting power",
       },
       {
@@ -351,7 +360,7 @@ it can report stats from bluzelle testnet and mainnet. Stats reported might incl
         value: "get which command has been set to send periodically (ADMIN ONLY)",
       },
       {
-        name: "/send-data [data] [time] [per] [network]",
+        name: "/set [data] [time] [per]",
         value: "send data periodically (ADMIN ONLY)",
       },
       {
@@ -359,7 +368,7 @@ it can report stats from bluzelle testnet and mainnet. Stats reported might incl
         value: "stop which command that has been set to send periodically (ADMIN ONLY)",
       },
       {
-        name: "/update [data] [time] [per] [network]",
+        name: "/update [data] [time] [per]",
         value: "update which command that has been set to send periodically (ADMIN ONLY)",
       },
     ],
@@ -422,22 +431,23 @@ export async function setScheduling(
   dataSwitch: string | number | boolean,
   client: Client,
   interaction: CommandInteraction,
-  time: string
+  time: number,
+  per:string
 ) {
   let milisecond;
 
-  switch (time) {
+  switch (per) {
     case "daily":
-      milisecond = 86400000;
+      milisecond = time*86400000;
       break;
-    case "hourly":
-      milisecond = 3600000;
+    case "hour":
+      milisecond = time*3600000;
       break;
-    case "minutely":
-      milisecond = 60000;
+    case "minute":
+      milisecond = time*60000;
       break;
-    case "secondly":
-      milisecond = 5000;
+    case "second":
+      milisecond = time*1000;
       break;
   }
   if (
@@ -509,22 +519,24 @@ export async function updateScheduling(
   dataSwitch: string | number | boolean,
   client: Client,
   interaction: CommandInteraction,
-  time: string
+  time: number,
+  per:string,
+  
 ) {
   let milisecond;
 
-  switch (time) {
+  switch (per) {
     case "daily":
-      milisecond = 86400000;
+      milisecond = time*86400000;
       break;
-    case "hourly":
-      milisecond = 3600000;
+    case "hour":
+      milisecond = time*3600000;
       break;
-    case "minutely":
-      milisecond = 60000;
+    case "minute":
+      milisecond = time*60000;
       break;
-    case "secondly":
-      milisecond = 5000;
+    case "second":
+      milisecond = time*1000;
       break;
   }
   if (
