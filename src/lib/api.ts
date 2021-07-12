@@ -2,7 +2,7 @@ import axios from "axios";
 import { bech32 } from "bech32";
 import * as numeral from "numeral";
 import * as numbro from "numbro";
-import * as moment from "moment-timezone"
+import * as moment from "moment-timezone";
 /**
  *  Connect with the bluzelle network API and RPC to get the data
  */
@@ -30,17 +30,14 @@ export class Api {
   private bech32PrefixAccAddr: string;
   private coins: Array<any>;
   private bondDenom: string;
-  //http://sandbox.sentry.net.bluzelle.com/ mainnet
-  constructor(
-    url: string = "client.sentry.testnet.private.bluzelle.com",
-    apiPort: number = 1317,
-    rpcPort: number = 26657,
-    bigDipperUrl: string = "https://bigdipper.testnet.private.bluzelle.com"
-  ) {
-    this.url = url;
-    this.apiPort = apiPort;
-    this.rpcPort = rpcPort;
-    this.bigDipperUrl = bigDipperUrl;
+  private fullUrlRpc: string;
+  private fullUrlApi: string;
+  private protocol: string;
+  constructor() {
+    this.url = "client.sentry.testnet.private.bluzelle.com";
+    this.apiPort = 1317;
+    this.rpcPort = 26657;
+    this.bigDipperUrl = "https://bigdipper.testnet.private.bluzelle.com";
     this.bech32PrefixConsAddr = "bluzellevalcons";
     this.bech32PrefixAccAddr = "bluzelle";
     this.coins = [
@@ -51,57 +48,70 @@ export class Api {
       },
     ];
     this.bondDenom = "ubnt";
+    this.protocol = "https";
+    this.fullUrlApi = `${this.protocol}://${this.url}:${this.apiPort}`;
+    this.fullUrlRpc = `${this.protocol}://${this.url}:${this.rpcPort}`;
   }
-   /**
+  /**
+   *  to set the network to  mainnet
+   */
+  setMainnet() {
+    this.url = "sandbox.sentry.net.bluzelle.com";
+    this.bigDipperUrl = "https://bigdipper.net.bluzelle.com";
+    this.fullUrlApi = `${this.protocol}://${this.url}:${this.apiPort}`;
+    this.fullUrlRpc = `http://${this.url}:${this.rpcPort}`;
+  }
+  /**
    *  get latest block
    */
-  async getLatestBlock(){
-   
+  async getLatestBlock() {
     let height = await this.getLatestBlockHeight();
     let url = `https://${this.url}:${this.apiPort}/blocks/${height}`;
-    let data= (await axios.get(url)).data;
+    let data = (await axios.get(url)).data;
     let format = "D MMM YYYY, h:mm:ssa z";
-    let timezone = moment.tz.guess()
+    let timezone = moment.tz.guess();
     let time = moment.utc(data.block.header.time);
-    let proposerHash=await this.getValidatorByProposerAddress(data.block.header.proposer_address)
-    let proposerAddressData=await this.getMoniker(proposerHash.pub_key.value)
+    let proposerHash = await this.getValidatorByProposerAddress(
+      data.block.header.proposer_address
+    );
+    let proposerAddressData = await this.getMoniker(proposerHash.pub_key.value);
     return {
-      time:time.format(format),
-      hash:data.block_id.hash,
-      proposer:`[${proposerAddressData.description.moniker}](${this.bigDipperUrl}/validator/${proposerAddressData.operator_address})`,
-      transNum:data.block.data.txs?data.block.data.txs.length:0,
-      height:`[${height}](${this.bigDipperUrl}/blocks/${height})`
-    }
-              
+      time: time.format(format),
+      hash: data.block_id.hash,
+      proposer: `[${proposerAddressData.description.moniker}](${this.bigDipperUrl}/validator/${proposerAddressData.operator_address})`,
+      transNum: data.block.data.txs ? data.block.data.txs.length : 0,
+      height: `[${height}](${this.bigDipperUrl}/blocks/${height})`,
+    };
   }
   /**
    *  get bluzelle coin stats
    */
-  async getCoinStats(){
+  async getCoinStats() {
     let coinId = "bluzelle";
     let url;
-        if (coinId){
-            try{
-                let now = new Date();
-                now.setMinutes(0);
-                url = "https://api.coingecko.com/api/v3/simple/price?ids="+coinId+"&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true";
-                let response =await axios.get(url);
-                if (response.status == 200){
-                    // console.log(JSON.parse(response.content));
-                    let data = response.data;
-                    data = data[coinId];
-                    // console.log(coinStats);
-                    return data
-                }
-            }
-            catch(e){
-                console.log(url);
-                console.log(e);
-            }
+    if (coinId) {
+      try {
+        let now = new Date();
+        now.setMinutes(0);
+        url =
+          "https://api.coingecko.com/api/v3/simple/price?ids=" +
+          coinId +
+          "&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true";
+        let response = await axios.get(url);
+        if (response.status == 200) {
+          // console.log(JSON.parse(response.content));
+          let data = response.data;
+          data = data[coinId];
+          // console.log(coinStats);
+          return data;
         }
-        else{
-            return "No coingecko Id provided."
-        }
+      } catch (e) {
+        console.log(url);
+        console.log(e);
+      }
+    } else {
+      return "No coingecko Id provided.";
+    }
   }
   /**
    *  get consensus state from the rpc
@@ -138,7 +148,7 @@ export class Api {
   /**
    *  get delegator address from operator address
    */
-  getDelegator(operatorAddr:any) {
+  getDelegator(operatorAddr: any) {
     let address = bech32.decode(operatorAddr);
     return bech32.encode(this.bech32PrefixAccAddr, address.words);
   }
@@ -154,7 +164,7 @@ export class Api {
     try {
       let response = await axios.get(url);
       let result = response.data.validators;
-      result.forEach((validator:any) =>
+      result.forEach((validator: any) =>
         validatorSet.set(validator.consensus_pubkey.key, validator)
       );
     } catch (e) {
@@ -192,8 +202,7 @@ export class Api {
     try {
       let response = await axios.get(url);
       let status = response.data;
-      return status.result.sync_info.latest_block_height
-    
+      return status.result.sync_info.latest_block_height;
     } catch (e) {
       return 0;
     }
@@ -202,7 +211,7 @@ export class Api {
    *  method to get online voting power
    */
   public async getOnlineVotingPower() {
-    let validators:any = [];
+    let validators: any = [];
     let page = 0;
     let result;
     do {
@@ -224,12 +233,14 @@ export class Api {
   /**
    *  method to get validator by proposer address example 1DCD10379369E699622E5FF7DF27C999C4B4B31D
    */
-  private async getValidatorByProposerAddress(proposerAddress:string) {
+  private async getValidatorByProposerAddress(proposerAddress: string) {
     let url = `https://${this.url}:${this.rpcPort}/validators`;
     try {
       let response = await axios.get(url);
       let status = response.data;
-      return status.result.validators.find((a:any)=>a.address===proposerAddress);
+      return status.result.validators.find(
+        (a: any) => a.address === proposerAddress
+      );
     } catch (e) {
       return [];
     }
@@ -281,7 +292,7 @@ export class Api {
   }
   public async getPercentageAndTotalStake() {
     let StakingCoin = this.coins.find((coin) => coin.denom === this.bondDenom);
-    
+
     return {
       percentage: numeral(
         (await this.getBondedToken()).bondedTokens /

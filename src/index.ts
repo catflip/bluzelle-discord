@@ -42,9 +42,9 @@ client.on("message", async (message: Message) => {
     message.content.toLowerCase() === "!undeploy" &&
     message?.member?.permissions.has("ADMINISTRATOR")
   ) {
-    // await client.guilds.cache
-    //   .get(process.env.GUILD_ID as any)
-    //   ?.commands.set([]);
+    await client.guilds.cache
+      .get(process.env.GUILD_ID as any)
+      ?.commands.set([]);
     if (periodic.has(message.guild.id)) {
       if (periodic.get(message.guild.id).size > 0) {
         const channel = Array.from(periodic.get(message.guild.id).keys());
