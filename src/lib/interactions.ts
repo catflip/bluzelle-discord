@@ -4,15 +4,13 @@ import {
   MessageActionRow,
   MessageButton,
   TextChannel,
-   EmbedFieldData
+  EmbedFieldData,
 } from "discord.js";
-import * as numeral from "numeral"
-import numbro from "numbro"
+import * as numeral from "numeral";
+import numbro from "numbro";
 import { Api } from "./api";
 export async function totalValidator() {
   const api = new Api();
-  
-  
   const totalValidator = await api.getValidator();
   const embed = {
     color: 0x0099ff,
@@ -38,50 +36,77 @@ export async function totalValidator() {
   };
   return embed;
 }
-export async function latestBlockEmbed(){
+export async function latestBlockEmbed() {
   const api = new Api();
-  
-  const latestBlock = await api.getLatestBlock();
-  const embed = {
-    color: 0x0099ff,
-    author: {
-      name: "Bluzelle bot",
-      icon_url:
-        "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
-      url: "https://bluzelle.com/",
-    },
-    title:`Latest Block`,
-    fields: [
-      {
-        name: "Time (UTC)",
-        value: `${latestBlock.time}`,
-      },
-      {
-        name: "#Hash",
-        value: `${latestBlock.hash}`,
-      },
-      {
-        name: "Proposer",
-        value: `${latestBlock.proposer}`,
-      },
-      {
-        name: "No. of Txs",
-        value: `${latestBlock.transNum}`,
-      },
-      {
-        name: "Height",
-        value: `${latestBlock.height}`,
-      },
-    ],
 
-    timestamp: new Date(),
-  };
-  return embed;
+  const latestBlock = await api.getLatestBlock();
+  if (latestBlock) {
+    const embed = {
+      color: 0x0099ff,
+      author: {
+        name: "Bluzelle bot",
+        icon_url:
+          "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
+        url: "https://bluzelle.com/",
+      },
+      title: `Latest Block`,
+      fields: [
+        {
+          name: "Time (UTC)",
+          value: `${latestBlock.time}`,
+        },
+        {
+          name: "#Hash",
+          value: `${latestBlock.hash}`,
+        },
+        {
+          name: "Proposer",
+          value: `${latestBlock.proposer}`,
+        },
+        {
+          name: "No. of Txs",
+          value: `${latestBlock.transNum}`,
+        },
+        {
+          name: "Height",
+          value: `${latestBlock.height}`,
+        },
+      ],
+
+      timestamp: new Date(),
+    };
+    return embed;
+  } else {
+    const embed = {
+      color: 15158332,
+      author: {
+        name: "Bluzelle bot",
+        icon_url:
+          "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
+        url: "https://bluzelle.com/",
+      },
+      description: "some error happen, please try again",
+      timestamp: new Date(),
+    };
+    return embed;
+  }
 }
-export function runningEmbed(periodList: Map<string, any>,interaction: CommandInteraction){
-  
-  const listRunning=periodList.size>0&&periodList.get((interaction.guildID as string)).get(interaction.channelID).size>0?periodList.get((interaction.guildID as string)).get(interaction.channelID):new Map();
-  const fields:EmbedFieldData[]=Array.from(listRunning.keys()).map((a):EmbedFieldData=>({name:(a as any).toString(),value:`stop with **/stop ${a}** and update with **/update ${a}**`}));
+export function runningEmbed(
+  periodList: Map<string, any>,
+  interaction: CommandInteraction
+) {
+  const listRunning =
+    periodList.size > 0 &&
+    periodList.get(interaction.guildID as string).get(interaction.channelID)
+      .size > 0
+      ? periodList.get(interaction.guildID as string).get(interaction.channelID)
+      : new Map();
+  const fields: EmbedFieldData[] = Array.from(listRunning.keys()).map(
+    (a): EmbedFieldData => ({
+      name: (a as any).toString(),
+      value: `stop with **/stop ${a}** and update with **/update ${a}**`,
+    })
+  );
   const embed = {
     color: 0x0099ff,
     author: {
@@ -90,16 +115,17 @@ export function runningEmbed(periodList: Map<string, any>,interaction: CommandIn
         "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
       url: "https://bluzelle.com/",
     },
-    description:listRunning.size>0?undefined:"no data has been set in this channel",
-    title:`Running`,
-    fields ,
+    description:
+      listRunning.size > 0 ? undefined : "no data has been set in this channel",
+    title: `Running`,
+    fields,
     timestamp: new Date(),
   };
   return embed;
 }
-export async function marketDataEmbed(){
+export async function marketDataEmbed() {
   const api = new Api();
-  
+
   const marketData = await api.getCoinStats();
   const embed = {
     color: 0x0099ff,
@@ -109,7 +135,7 @@ export async function marketDataEmbed(){
         "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
       url: "https://bluzelle.com/",
     },
-    title:`Market Data`,
+    title: `Market Data`,
     fields: [
       {
         name: "Price",
@@ -119,20 +145,18 @@ export async function marketDataEmbed(){
         name: "Market Cap",
         // @ts-ignore
         value: `${numbro(marketData.usd_market_cap).format("$0,0.00")}`,
-      }
-      
+      },
     ],
 
     timestamp: new Date(),
   };
   return embed;
 }
-export async function validatorByAddressEmbed(address:string) {
-
+export async function validatorByAddressEmbed(address: string) {
   const api = new Api();
-  
-  const {validator:validatorInfo} = await api.getValidatorByAddress(address);
-  
+
+  const { validator: validatorInfo } = await api.getValidatorByAddress(address);
+
   const embed = {
     color: 0x0099ff,
     author: {
@@ -141,7 +165,7 @@ export async function validatorByAddressEmbed(address:string) {
         "https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg",
       url: "https://bluzelle.com/",
     },
-    title:`${validatorInfo.description.moniker} details`,
+    title: `${validatorInfo.description.moniker} details`,
     fields: [
       {
         name: "Operator Address",
@@ -149,29 +173,47 @@ export async function validatorByAddressEmbed(address:string) {
       },
       {
         name: "Self-Delegate Address",
-        value: `[${api.getDelegator(validatorInfo.operator_address)}](${api.bigDipperUrl}/account/${api.getDelegator(validatorInfo.operator_address)})`,
+        value: `[${api.getDelegator(validatorInfo.operator_address)}](${
+          api.bigDipperUrl
+        }/account/${api.getDelegator(validatorInfo.operator_address)})`,
       },
       {
         name: "Commission Rate",
-        value: `${validatorInfo.commission&&validatorInfo.commission.commission_rates?numeral(validatorInfo.commission.commission_rates.rate*100).format('0.00')+"%":''}`,
+        value: `${
+          validatorInfo.commission && validatorInfo.commission.commission_rates
+            ? numbro(
+                validatorInfo.commission.commission_rates.rate * 100
+              ).format("0.00") + "%"
+            : ""
+        }`,
       },
       {
         name: "Max Rate",
-        value: `${validatorInfo.commission&&validatorInfo.commission.commission_rates?numeral(validatorInfo.commission.commission_rates.max_rate*100).format('0.00')+"%":''}`,
+        value: `${
+          validatorInfo.commission && validatorInfo.commission.commission_rates
+            ? numbro(
+                validatorInfo.commission.commission_rates.max_rate * 100
+              ).format("0.00") + "%"
+            : ""
+        }`,
       },
       {
         name: "Max Change Rate",
-        value: `${validatorInfo.commission&&validatorInfo.commission.commission_rates?numeral(validatorInfo.commission.commission_rates.max_change_rate*100).format('0.00')+"%":''}`,
+        value: `${
+          validatorInfo.commission && validatorInfo.commission.commission_rates
+            ? numbro(
+                validatorInfo.commission.commission_rates.max_change_rate * 100
+              ).format("0.00") + "%"
+            : ""
+        }`,
       },
     ],
-
     timestamp: new Date(),
   };
   return embed;
 }
 export async function totalBlocks() {
   const api = new Api();
-  
   const totalBlock = await api.getLatestBlockHeight();
   const embed = {
     color: 0x0099ff,
@@ -184,9 +226,8 @@ export async function totalBlocks() {
     fields: [
       {
         name: "Latest Block Height",
-        value: `${new Intl.NumberFormat("en-US").format(
-          totalBlock
-        )}`,
+        value: `${new Intl.NumberFormat("en-US").format(totalBlock.height)}
+        ${totalBlock.time}`,
       },
     ],
 
@@ -196,7 +237,7 @@ export async function totalBlocks() {
 }
 export async function averageBlockTime() {
   const api = new Api();
-  
+
   const blockTimes = await api.getAverageBlockTime();
   const embed = {
     color: 0x0099ff,
@@ -219,9 +260,9 @@ export async function averageBlockTime() {
 }
 export async function onlineVotingPowerEmbed() {
   const api = new Api();
-  
+
   const onlineVotingPower = await api.getOnlineVotingPower();
-  const percentageAndTotalStake=await api.getPercentageAndTotalStake();
+  const percentageAndTotalStake = await api.getPercentageAndTotalStake();
   const embed = {
     color: 0x0099ff,
     author: {
@@ -233,8 +274,10 @@ export async function onlineVotingPowerEmbed() {
     fields: [
       {
         name: "Online Voting Power (Now)",
-        value: `${numbro(onlineVotingPower).format('0,0.00a')}
-        ${percentageAndTotalStake.percentage} from ${percentageAndTotalStake.totalStake}
+        value: `${numbro(onlineVotingPower).format("0,0.00a")}
+        ${percentageAndTotalStake.percentage} from ${
+          percentageAndTotalStake.totalStake
+        }
         `,
       },
     ],
@@ -245,11 +288,12 @@ export async function onlineVotingPowerEmbed() {
 }
 export async function consensusStateEmbed() {
   const api = new Api();
-  
-  const {votingHeight,votingRound,votingStep,proposer,votedPower,image} = await api.getConsensusState();
+
+  const { votingHeight, votingRound, votingStep, proposer, votedPower, image } =
+    await api.getConsensusState();
   const embed = {
     color: 0x0099ff,
-    title:"Consensus State",
+    title: "Consensus State",
     author: {
       name: "Bluzelle bot",
       icon_url:
@@ -260,42 +304,35 @@ export async function consensusStateEmbed() {
       {
         name: "Height",
         value: `${votingHeight}`,
-        
       },
       {
         name: "Round",
         value: `${votingRound}`,
-        
       },
       {
         name: "Step",
         value: `${votingStep}`,
-        
       },
       {
         name: "Proposer",
         value: `[${proposer.description.moniker}](${api.bigDipperUrl}/validator/${proposer.operator_address})`,
-        
       },
       {
         name: "Voting Power",
         value: `${votedPower}`,
-        
       },
     ],
-image:{url:image},
+    image: { url: image },
     timestamp: new Date(),
   };
 
-  const row = new MessageActionRow()
-			.addComponents(
-				new MessageButton()
-					.setCustomID(`getvalidator:${proposer.operator_address}`)
-					.setLabel(`${proposer.description.moniker} details`)
-					.setStyle('PRIMARY'),
-        
-			);
-  return {embed,row};
+  const row = new MessageActionRow().addComponents(
+    new MessageButton()
+      .setCustomID(`getvalidator:${proposer.operator_address}`)
+      .setLabel(`${proposer.description.moniker} details`)
+      .setStyle("PRIMARY")
+  );
+  return { embed, row };
 }
 export const helpMessage = {
   embed: {
@@ -320,8 +357,7 @@ it can report stats from bluzelle testnet only. Stats reported might include thi
       },
       {
         name: "!undeploy",
-        value:
-          "remove slash command from your guild/server",
+        value: "remove slash command from your guild/server",
       },
       {
         name: "/help",
@@ -357,7 +393,8 @@ it can report stats from bluzelle testnet only. Stats reported might include thi
       },
       {
         name: "/running",
-        value: "get which command has been set to send periodically (ADMIN ONLY)",
+        value:
+          "get which command has been set to send periodically (ADMIN ONLY)",
       },
       {
         name: "/set [data] [time] [per]",
@@ -365,11 +402,13 @@ it can report stats from bluzelle testnet only. Stats reported might include thi
       },
       {
         name: "/stop [data]",
-        value: "stop which command that has been set to send periodically (ADMIN ONLY)",
+        value:
+          "stop which command that has been set to send periodically (ADMIN ONLY)",
       },
       {
         name: "/update [data] [time] [per]",
-        value: "update which command that has been set to send periodically (ADMIN ONLY)",
+        value:
+          "update which command that has been set to send periodically (ADMIN ONLY)",
       },
     ],
 
@@ -379,15 +418,17 @@ it can report stats from bluzelle testnet only. Stats reported might include thi
     new MessageButton()
       .setLabel("INVITE")
       .setStyle("LINK")
-      .setURL((process.env.DISCORD_INVITE as string)),
-      new MessageButton()
+      .setURL(process.env.DISCORD_INVITE as string),
+    new MessageButton()
       .setLabel("COMMAND LIST")
       .setStyle("LINK")
-      .setURL(`${(process.env.WEBSITE as string) || "http://localhost:3000"}/commands`)
+      .setURL(
+        `${(process.env.WEBSITE as string) || "http://localhost:3000"}/commands`
+      )
   ),
 };
 
-async function sendEmbed(client: Client, channelID: `${bigint}`, embed:any) {
+async function sendEmbed(client: Client, channelID: `${bigint}`, embed: any) {
   let message: any = "sorry can't process message";
   switch (embed) {
     case "total-validator":
@@ -400,17 +441,20 @@ async function sendEmbed(client: Client, channelID: `${bigint}`, embed:any) {
       message = { embeds: [await averageBlockTime()] };
       break;
     case "consensus-state":
-      message = { embeds: [(await consensusStateEmbed()).embed],components:[(await consensusStateEmbed()).row] };
+      message = {
+        embeds: [(await consensusStateEmbed()).embed],
+        components: [(await consensusStateEmbed()).row],
+      };
       break;
-      case "online-voting-power":
-        message ={ embeds: [await onlineVotingPowerEmbed()] };
-        break;
-        case "latest-block":
-          message ={ embeds: [await latestBlockEmbed()] };
-          break;
-          case "market-data":
-            message ={ embeds: [await marketDataEmbed()] };
-          break;
+    case "online-voting-power":
+      message = { embeds: [await onlineVotingPowerEmbed()] };
+      break;
+    case "latest-block":
+      message = { embeds: [await latestBlockEmbed()] };
+      break;
+    case "market-data":
+      message = { embeds: [await marketDataEmbed()] };
+      break;
   }
   (client.channels.cache.get(channelID) as TextChannel).send(message);
 }
@@ -418,7 +462,7 @@ function scheduling(
   client: Client,
   interaction: CommandInteraction,
   milisecond: number,
-  embed:any
+  embed: any
 ) {
   return setInterval(
     () => sendEmbed(client, interaction.channelID, embed),
@@ -432,51 +476,55 @@ export async function setScheduling(
   client: Client,
   interaction: CommandInteraction,
   time: number,
-  per:string
+  per: string
 ) {
   let milisecond;
 
   switch (per) {
     case "daily":
-      milisecond = time*86400000;
+      milisecond = time * 86400000;
       break;
     case "hour":
-      milisecond = time*3600000;
+      milisecond = time * 3600000;
       break;
     case "minute":
-      milisecond = time*60000;
+      milisecond = time * 60000;
       break;
     case "second":
-      milisecond = time*1000;
+      milisecond = time * 1000;
       break;
   }
   if (
-    periodList.has((interaction.guildID as string)) &&
+    periodList.has(interaction.guildID as string) &&
+    periodList.get(interaction.guildID as string).has(interaction.channelID) &&
     periodList
-      .get((interaction.guildID as string))
-      .has(interaction.channelID) && periodList
-      .get((interaction.guildID as string))
-      .get(interaction.channelID).has(dataSwitch)
+      .get(interaction.guildID as string)
+      .get(interaction.channelID)
+      .has(dataSwitch)
   ) {
     return await interaction.reply({
-      content: `${dataSwitch} has been set, please use **/update** to update the time`,ephemeral:true
+      content: `${dataSwitch} has been set, please use **/update** to update the time`,
+      ephemeral: true,
     });
   }
-  if (!periodList.has((interaction.guildID as string)))
-    periodList.set((interaction.guildID as string), new Map());
-    if (!periodList.get((interaction.guildID as string)).has(interaction.channelID))
-    periodList.get((interaction.guildID as string)).set(interaction.channelID, new Map());
-    
+  if (!periodList.has(interaction.guildID as string))
+    periodList.set(interaction.guildID as string, new Map());
+  if (!periodList.get(interaction.guildID as string).has(interaction.channelID))
+    periodList
+      .get(interaction.guildID as string)
+      .set(interaction.channelID, new Map());
+
   periodList
-    .get((interaction.guildID as string))
+    .get(interaction.guildID as string)
     .get(interaction.channelID)
     .set(
       dataSwitch,
-      scheduling(client, interaction, (milisecond as any), dataSwitch)
+      scheduling(client, interaction, milisecond as any, dataSwitch)
     );
 
   await interaction.reply({
-    content: `${dataSwitch} has been set, please use **/update** to update the time and **/stop** to stop the data`,ephemeral:true
+    content: `${dataSwitch} has been set, please use **/update** to update the time and **/stop** to stop the data`,
+    ephemeral: true,
   });
 }
 
@@ -486,30 +534,31 @@ export async function stopScheduling(
   dataSwitch: string | boolean | number
 ) {
   if (
-    periodList.has((interaction.guildID as string)) &&
+    periodList.has(interaction.guildID as string) &&
     periodList
-      .get((interaction.guildID as string))
+      .get(interaction.guildID as string)
       .get(interaction.channelID)
       .has(dataSwitch)
   ) {
     clearInterval(
       periodList
-      .get((interaction.guildID as string))
-      .get(interaction.channelID)
-      .get(dataSwitch)
+        .get(interaction.guildID as string)
+        .get(interaction.channelID)
+        .get(dataSwitch)
     );
     periodList
-      .get((interaction.guildID as string))
+      .get(interaction.guildID as string)
       .get(interaction.channelID)
-      .delete(dataSwitch)
-    
+      .delete(dataSwitch);
+
     await interaction.reply({
-      content: `${dataSwitch} has been stopped, please use **/set** to set it again`,ephemeral:true
+      content: `${dataSwitch} has been stopped, please use **/set** to set it again`,
+      ephemeral: true,
     });
   } else {
-    
     await interaction.reply({
-      content: `${dataSwitch} is not set, set it using **/set** command`,ephemeral:true
+      content: `${dataSwitch} is not set, set it using **/set** command`,
+      ephemeral: true,
     });
   }
 }
@@ -520,56 +569,56 @@ export async function updateScheduling(
   client: Client,
   interaction: CommandInteraction,
   time: number,
-  per:string,
-  
+  per: string
 ) {
   let milisecond;
 
   switch (per) {
     case "daily":
-      milisecond = time*86400000;
+      milisecond = time * 86400000;
       break;
     case "hour":
-      milisecond = time*3600000;
+      milisecond = time * 3600000;
       break;
     case "minute":
-      milisecond = time*60000;
+      milisecond = time * 60000;
       break;
     case "second":
-      milisecond = time*1000;
+      milisecond = time * 1000;
       break;
   }
   if (
-    periodList.has((interaction.guildID as string)) &&
+    periodList.has(interaction.guildID as string) &&
     periodList
-      .get((interaction.guildID as string))
+      .get(interaction.guildID as string)
       .get(interaction.channelID)
       .has(dataSwitch)
   ) {
     clearInterval(
       periodList
-      .get((interaction.guildID as string))
-      .get(interaction.channelID)
-      .get(dataSwitch)
+        .get(interaction.guildID as string)
+        .get(interaction.channelID)
+        .get(dataSwitch)
     );
     periodList
-      .get((interaction.guildID as string))
+      .get(interaction.guildID as string)
       .get(interaction.channelID)
-      .delete(dataSwitch)
-      periodList
-      .get((interaction.guildID as string))
+      .delete(dataSwitch);
+    periodList
+      .get(interaction.guildID as string)
       .get(interaction.channelID)
       .set(
         dataSwitch,
-        scheduling(client, interaction, (milisecond as any), dataSwitch)
+        scheduling(client, interaction, milisecond as any, dataSwitch)
       );
     await interaction.reply({
-      content: `${dataSwitch} has been updated`,ephemeral:true
+      content: `${dataSwitch} has been updated`,
+      ephemeral: true,
     });
   } else {
-    
     await interaction.reply({
-      content: `${dataSwitch} is not set, set it using **/set** command`,ephemeral:true
+      content: `${dataSwitch} is not set, set it using **/set** command`,
+      ephemeral: true,
     });
   }
 }

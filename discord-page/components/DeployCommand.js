@@ -1,3 +1,9 @@
+import { CardCommand } from "./CardCommand";
+import {
+
+  DiscordMessage,
+  DiscordMessages,
+} from "@skyra/discord-components-react";
 export const DeployCommand=()=>{
     return (   <CardCommand
         anything={

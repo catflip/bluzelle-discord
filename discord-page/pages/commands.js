@@ -10,6 +10,8 @@ import {
   DiscordMessage,
   DiscordMessages,
 } from "@skyra/discord-components-react";
+import { HelpCommand } from "../components/HelpCommand";
+import { DeployCommand } from "../components/DeployCommand";
 
 export default function Home(props) {
   return (
@@ -47,37 +49,11 @@ export default function Home(props) {
         network in discord
       </h3>
       <div className="grid  gap-2">
-     
+     <DeployCommand/>
         <CardCommand
           description="To show which command can be used by admin or user"
           title="/help"
-          anything={
-            <>
-              <DiscordMessages>
-                <DiscordMessage>/help</DiscordMessage>
-                <DiscordMessage
-                  author="bluzelle"
-                  bot={true}
-                  avatar={`https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg`}
-                >
-                  <DiscordEmbed
-                    color="#0099ff"
-                    slot="embeds"
-                    author-image="https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg"
-                    author-name="Bluzelle bot"
-                    author-url="https://bluzelle.com/"
-                  >
-                    A bot that is able to push updates to the Bluzelle Discord
-                    channel, reporting relevant statistics gathered from
-                    configured networks. it can report stats from bluzelle
-                    testnet and mainnet. Stats reported might include things
-                    like # of validators, # of blocks, block times, etc.
-                    <span slot="footer">Today at 9:42 PM</span>
-                  </DiscordEmbed>
-                </DiscordMessage>
-              </DiscordMessages>
-            </>
-          }
+          anything={<HelpCommand/>}
         />
         <CardCommand
           description="this command will get total validator just like in big dipper"

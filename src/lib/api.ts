@@ -66,24 +66,30 @@ export class Api {
    *  get latest block
    */
   async getLatestBlock() {
-    let height = await this.getLatestBlockHeight();
-    let url = `${this.fullUrlApi}/blocks/${height}`;
-    let data = (await axios.get(url)).data;
-    let format = "D MMM YYYY, h:mm:ssa z";
-    let timezone = moment.tz.guess();
-    let time = moment.utc(data.block.header.time);
-    let proposerHash = await this.getValidatorByProposerAddress(
-      data.block.header.proposer_address
-    );
-    let proposerAddressData = await this.getMoniker(proposerHash.pub_key.value);
-    return {
-      
-      time: time.format(format),
-      hash: data.block_id.hash,
-      proposer: `[${proposerAddressData.description.moniker}](${this.bigDipperUrl}/validator/${proposerAddressData.operator_address})`,
-      transNum: data.block.data.txs ? data.block.data.txs.length : 0,
-      height: `[${height}](${this.bigDipperUrl}/blocks/${height})`,
-    };
+    let url;
+    try{
+      let height = await this.getLatestBlockHeight();
+      url = `${this.fullUrlApi}/blocks/${height.height}`;
+      let data = (await axios.get(url)).data;
+      let format = "D MMM YYYY, h:mm:ssa z";
+      let time = moment.utc(data.block.header.time);
+      let proposerHash = await this.getValidatorByProposerAddress(
+        data.block.header.proposer_address
+      );
+      let proposerAddressData = await this.getMoniker(proposerHash.pub_key.value);
+      return {
+        time: time.format(format),
+        hash: data.block_id.hash,
+        proposer: `[${proposerAddressData.description.moniker}](${this.bigDipperUrl}/validator/${proposerAddressData.operator_address})`,
+        transNum: data.block.data.txs ? data.block.data.txs.length : 0,
+        height: `[${height.height}](${this.bigDipperUrl}/blocks/${height.height})`,
+      };
+    }catch(e){
+      console.log(url)
+      console.log(e.message)
+      return false
+    }
+    
   }
   /**
    *  get bluzelle coin stats
@@ -223,11 +229,14 @@ export class Api {
   public async getLatestBlockHeight() {
     let url = `${this.fullUrlRpc}/status`;
     try {
+     
       let response = await axios.get(url);
       let status = response.data;
-      return status.result.sync_info.latest_block_height;
+      let format = "D MMM YYYY, h:mm:ssa z";
+      let time = moment.utc(status.result.sync_info.latest_block_time);
+      return {height:status.result.sync_info.latest_block_height,time:time.format(format)};
     } catch (e) {
-      return 0;
+      return {height:0,time:""};
     }
   }
   /**
