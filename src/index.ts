@@ -43,7 +43,7 @@ client.on("message", async (message: Message) => {
     message?.member?.permissions.has("ADMINISTRATOR")
   ) {
     await client.guilds.cache
-      .get(process.env.GUILD_ID as any)
+      .get(message.guild.id)
       ?.commands.set([]);
     if (periodic.has(message.guild.id)) {
       if (periodic.get(message.guild.id).size > 0) {
