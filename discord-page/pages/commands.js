@@ -1,17 +1,16 @@
 import Head from "next/head";
-import { GetStaticProps } from "next";
 import { CardCommand } from "../components/CardCommand";
-import { config } from "../utils/config";
-
-import {
-  DiscordEmbed,
-  DiscordEmbedFields,
-  DiscordEmbedField,
-  DiscordMessage,
-  DiscordMessages,
-} from "@skyra/discord-components-react";
 import { HelpCommand } from "../components/HelpCommand";
 import { DeployCommand } from "../components/DeployCommand";
+import { UndeployCommand } from "../components/UndeployCommand";
+import { TotalValidatorCommand } from "../components/TotalValidatorCommand";
+import { TotalBlockCommand } from "../components/TotalBlockCommand";
+import { BlockTimesCommand } from "../components/BlockTimesCommand";
+import { ConsensusStateCommand } from "../components/ConsensusStateCommand";
+import { LatestBlockCommand } from "../components/LatestBlockCommand";
+import { MarketDataCommand } from "../components/MarketDataCommand";
+import { OnlineVotingPowerCommand } from "../components/OnlineVotingPowerCommand";
+import { RunningCommand } from "../components/RunningCommand";
 
 export default function Home(props) {
   return (
@@ -50,6 +49,7 @@ export default function Home(props) {
       </h3>
       <div className="grid  gap-2">
      <DeployCommand/>
+     <UndeployCommand/>
         <CardCommand
           description="To show which command can be used by admin or user"
           title="/help"
@@ -59,70 +59,52 @@ export default function Home(props) {
           description="this command will get total validator just like in big dipper"
           title="/total-validator"
           anything={
-            <>
-              <img src="https://i.gyazo.com/c0390a4ec7dc01ded29ffe4bca0b69af.png" />
-              <DiscordMessages>
-                <DiscordMessage author={"User"}>
-                  /total-validator
-                </DiscordMessage>
-                <DiscordMessage
-                  author="bluzelle"
-                  bot={true}
-                  avatar={`https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg`}
-                >
-                  <DiscordEmbed
-                    color="#0099ff"
-                    slot="embeds"
-                    author-image="https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg"
-                    author-name="Bluzelle bot"
-                    author-url="https://bluzelle.com/"
-                  >
-                    <DiscordEmbedFields slot="fields">
-                      <DiscordEmbedField fieldTitle="Active Validators">
-                        5 out of 5 validators
-                      </DiscordEmbedField>
-                    </DiscordEmbedFields>
-                    <span slot="footer">Today at 9:42 PM</span>
-                  </DiscordEmbed>
-                </DiscordMessage>
-              </DiscordMessages>
-            </>
+         <TotalValidatorCommand/>
           }
         />
         <CardCommand
           description="to get latest block height"
           title="/total-block"
           anything={
-            <>
-              <img src="https://i.gyazo.com/2763b0ee1e08a851d79b9a66f79511bf.png" />
-              <DiscordMessages>
-                <DiscordMessage author={"User"}>
-                  /total-block
-                </DiscordMessage>
-                <DiscordMessage
-                  author="bluzelle"
-                  bot={true}
-                  avatar={`https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg`}
-                >
-                  <DiscordEmbed
-                    color="#0099ff"
-                    slot="embeds"
-                    author-image="https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg"
-                    author-name="Bluzelle bot"
-                    author-url="https://bluzelle.com/"
-                  >
-                    <DiscordEmbedFields slot="fields">
-                      <DiscordEmbedField fieldTitle="Latest Block Height">
-                      258,680
-                      </DiscordEmbedField>
-                    </DiscordEmbedFields>
-                    <span slot="footer">Today at 9:42 PM</span>
-                  </DiscordEmbed>
-                </DiscordMessage>
-              </DiscordMessages>
-            </>
+          <TotalBlockCommand/>
           }
         />
+         <CardCommand
+          description="average block times"
+          title="/block-times"
+          anything={
+          <BlockTimesCommand/>
+          }
+        />
+        <CardCommand
+          description="to get consensus state"
+          title="/consensus-state"
+          anything={
+          <ConsensusStateCommand/>
+          }
+        />
+         <CardCommand
+          description="to get latest block"
+          title="/latest-block"
+          anything={
+          <LatestBlockCommand/>
+          }
+        />
+        <CardCommand
+          description="get blz token and market cap"
+          title="/market-data"
+          anything={
+          <MarketDataCommand/>
+          }
+        />
+          <CardCommand
+          description="get online voting power now"
+          title="/online-voting-power"
+          anything={
+          <OnlineVotingPowerCommand/>
+          }
+        />
+        <RunningCommand/>
       </div>
     </div>
   );

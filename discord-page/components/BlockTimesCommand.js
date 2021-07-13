@@ -1,0 +1,37 @@
+import {
+  DiscordEmbed,
+  DiscordEmbedFields,
+  DiscordEmbedField,
+  DiscordMessage,
+  DiscordMessages,
+} from "@skyra/discord-components-react";
+export const BlockTimesCommand=()=>{
+    return (    <>
+      <img src="https://i.gyazo.com/d9797a7e5f624952e10195bf8621accc.png" />
+      <DiscordMessages>
+        <DiscordMessage author={"User"}>
+          /block-times
+        </DiscordMessage>
+        <DiscordMessage
+          author="bluzelle"
+          bot={true}
+          avatar={`https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg`}
+        >
+          <DiscordEmbed
+            color="#0099ff"
+            slot="embeds"
+            author-image="https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg"
+            author-name="Bluzelle bot"
+            author-url="https://bluzelle.com/"
+          >
+            <DiscordEmbedFields slot="fields">
+              <DiscordEmbedField fieldTitle="Average Block Time (All)">
+              5.48 second
+              </DiscordEmbedField>
+            </DiscordEmbedFields>
+            <span slot="footer">Today at 9:42 PM</span>
+          </DiscordEmbed>
+        </DiscordMessage>
+      </DiscordMessages>
+    </>)
+}

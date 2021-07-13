@@ -104,7 +104,7 @@ export function runningEmbed(
   const fields: EmbedFieldData[] = Array.from(listRunning.keys()).map(
     (a): EmbedFieldData => ({
       name: (a as any).toString(),
-      value: `stop with **/stop ${a}** and update with **/update ${a}**`,
+      value: `stop with **/stop data:${a}** and update with **/update data:${a}**`,
     })
   );
   const embed = {
@@ -117,7 +117,7 @@ export function runningEmbed(
     },
     description:
       listRunning.size > 0 ? undefined : "no data has been set in this channel",
-    title: `Running`,
+    title: `Running process`,
     fields,
     timestamp: new Date(),
   };
@@ -227,6 +227,7 @@ export async function totalBlocks() {
       {
         name: "Latest Block Height",
         value: `${new Intl.NumberFormat("en-US").format(totalBlock.height)}
+
         ${totalBlock.time}`,
       },
     ],
@@ -275,6 +276,7 @@ export async function onlineVotingPowerEmbed() {
       {
         name: "Online Voting Power (Now)",
         value: `${numbro(onlineVotingPower).format("0,0.00a")}
+
         ${percentageAndTotalStake.percentage} from ${
           percentageAndTotalStake.totalStake
         }
@@ -385,7 +387,7 @@ it can report stats from bluzelle testnet only. Stats reported might include thi
       },
       {
         name: "/market-data",
-        value: "get price of BLZ token",
+        value: "get price of BLZ token and market cap",
       },
       {
         name: "/online-voting-power",
