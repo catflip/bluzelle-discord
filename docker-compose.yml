@@ -6,11 +6,11 @@ services:
     env_file: .env
   nextjs-ui:
     build:
-        context: ./discord-pageg
+        context: ./discord-page
         args:
           - DISCORD_INVITE=${DISCORD_INVITE}
     ports:
-        - "3000:3000"
+        - "80:3000"
     container_name: nextjs-ui
     stdin_open: true
     
