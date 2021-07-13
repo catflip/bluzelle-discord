@@ -5,7 +5,7 @@ import {
   DiscordMessages,
 } from "@skyra/discord-components-react";
 const description=<>
-<p>To set which data to send</p>
+<p>To update what time the data that has been set should be sent</p>
 <ol>
   <li>
     <b>- data [string]</b> set which data to send the data that can be send including <b>total-validator</b>,
@@ -19,11 +19,11 @@ const description=<>
   </li>
 </ol>
 </>;
-export const SetCommand=()=>{
+export const UpdateCommand=()=>{
     return (   <CardCommand
         anything={
           <DiscordMessages>
-            <DiscordMessage author="admin">/set data:total-validator time:2 per:second</DiscordMessage>
+            <DiscordMessage author="admin">/update data:total-validator time:2 per:daily</DiscordMessage>
             <DiscordMessage
               author="bluzelle"
               bot={true}
@@ -33,7 +33,7 @@ export const SetCommand=()=>{
             </DiscordMessage>
           </DiscordMessages>
         }
-        title="/set data:[data] time:[time] per:[per]"
+        title="/update data:[data] time:[time] per:[per]"
         description={description}
       />)
 }

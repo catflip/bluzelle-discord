@@ -11,7 +11,9 @@ import { LatestBlockCommand } from "../components/LatestBlockCommand";
 import { MarketDataCommand } from "../components/MarketDataCommand";
 import { OnlineVotingPowerCommand } from "../components/OnlineVotingPowerCommand";
 import { RunningCommand } from "../components/RunningCommand";
-
+import { SetCommand } from "../components/SetCommand";
+import { StopCommand } from "../components/StopCommand";
+import { UpdateCommand } from "../components/UpdateCommand";
 export default function Home(props) {
   return (
     <div className="max-w-lg mx-auto mt-20 p-10 justify-center items-center">
@@ -31,6 +33,14 @@ export default function Home(props) {
         </a>
       </div>
       <h2 className="text-center font-bold text-5xl">Bluzelle</h2>
+      <div className="text-center mb-2 mt-2">
+        <a
+          href={`/`}
+          className="bg-indigo-50 font-medium mt-5 text-indigo-600 px-4 py-1.5 rounded-full inline-block"
+        >
+          Home
+        </a>
+      </div>
       <div className="text-center mb-10 mt-2">
         <a
           href={`#`}
@@ -39,6 +49,7 @@ export default function Home(props) {
           Command List
         </a>
       </div>
+      
       <h3
         className={
           "rounded-md mb-10 text-center p-2 bg-green-50 text-green-500"
@@ -105,6 +116,9 @@ export default function Home(props) {
           }
         />
         <RunningCommand/>
+        <SetCommand/>
+        <StopCommand/>
+        <UpdateCommand/>
       </div>
     </div>
   );
