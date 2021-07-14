@@ -1,3 +1,14 @@
+# List of content
+
+1. [Description](#bluzelle-discord-bot)
+2. [Website](#website)
+3. [Video Tutorial](#video-tutorial)
+4. [How to create a bot](#how-to-create-bot)
+5. [Tutorial to setup local development](#tutorial-to-setup-local-development)
+6. [Run the discord server bot in vps](#run-the-discord-server-bot-in-vps)
+
+
+
 # Bluzelle Discord Bot
 
 This is a discord server bot that you can use to get data from bluzelle network currently all data is still using testnet as you can see on the big dipper of testnet itself [here](https://bigdipper.testnet.private.bluzelle.com/), this application consist of two application at once, which then can be use easily using docker compose in your own vps.
