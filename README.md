@@ -85,6 +85,37 @@ and then after that if you see your discord server your bot is now online which 
 
 6. if you click on `COMMAND LIST` button basically you will go to a blank page in `http://localhost:3000`
 
+![image](https://user-images.githubusercontent.com/62529025/125551416-8f7d55c5-a90b-4e3e-840b-7d0238fc4e9e.png)
+
+7. so in order to run the frontend issue this command in new terminal but in the same folder :
+
+```
+cd discord-page
+npm install
+npm run dev
+```
+
+8. Now when you go to `localhost:3000` or when clicking `COMMAND LIST` button in discord server you will see something like this:
+
+![image](https://user-images.githubusercontent.com/62529025/125551586-a26aff62-8678-434e-b316-770021512389.png)
+
+9. now you can edit the code whatever you like it, because this discord bot is using typescript easily see the type and some of the desciprtion of what particular command does.
+
+# Run the discord server bot in vps
+
+1. in order to run this on vps you need to ssh to your vps first after that you need to run this command in your terminal :
+
+```
+git clone https://github.com/spiritbro1/bluzelle-discord.git
+cd bluzelle-discord
+sudo su
+bash build.sh
+```
+
+2. wait for it to complete after it complete go to your vps ip address and you will see the exact same frontend that you get via local development you will also need to issue a `!deploy` command in your discord server in order for you to use the slash command
+
+
+
 
 
 
