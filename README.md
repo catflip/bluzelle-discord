@@ -11,7 +11,7 @@
 
 # Bluzelle Discord Bot
 
-This is a discord server bot that you can use to get data from bluzelle network currently all data is still using testnet as you can see on the big dipper of testnet itself [here](https://bigdipper.testnet.private.bluzelle.com/), this application consist of two application at once, which then can be use easily using docker compose in your own vps.
+This is a discord server bot that you can use to get data from bluzelle network easily, currently all data is still using testnet, you can see all of the data of bluzelle in  big dipper of testnet itself [here](https://bigdipper.testnet.private.bluzelle.com/), this application consist of two application at once, frontend and backend which then can be use easily using docker compose in your own vps.
 
 # Website
 
@@ -38,7 +38,7 @@ http://bluzelle-discord.rino.world
 
 5. now click `oauth2` then set the bot by clicking `bot`, `application.commands`, `Send Message`, `Embed Link` and copy paste the invite link like below :
 
-![image](https://user-images.githubusercontent.com/62529025/125549377-dedbbdde-e5b2-46c5-9bbe-a336aa53aad7.png)
+![tempsnip](https://user-images.githubusercontent.com/62529025/125604094-62cd7e43-c55b-47dc-a81a-c7fd7accd985.png)
 
 6. open that on your browser and add it to your discord server :
 
