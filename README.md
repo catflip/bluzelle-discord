@@ -52,7 +52,7 @@ http://bluzelle-discord.rino.world
 
 # Tutorial to setup local development
 
-1. create an environment variable called `.env` in `src` folder you can see the `.env.example` for example of variable that need to be added in order for this bot to work
+1. after you clone this repo, create an environment variable called `.env` and put it in `src` folder you can see the `.env.example` for example of variable that need to be added in order for this bot to work
 
 ```
 DISCORD_TOKEN=
@@ -76,7 +76,7 @@ and this is the example when that button clicked it will show this webpage :
 
 ![image](https://user-images.githubusercontent.com/62529025/125548358-7c27ac06-45fe-44d6-8cc6-f31a0fcb00e1.png)
 
-3. After you done setting up your environment variable go to your vscode, open your cloned folder of this repo and issue this command :
+3. After you done setting up your environment variable go to your vscode terminal, and issue this command :
 
 ```bash
 npm install 
@@ -86,11 +86,11 @@ if it show `Ready!` in console your bot is ready to use
 
 ![image](https://user-images.githubusercontent.com/62529025/125548655-26ba4eb5-996a-42ee-b8b3-f503c826019d.png)
 
-and then after that if you see your discord server your bot is now online which means we can interact with it
+and then after that if you see your discord server, your bot is now online which means we can interact with it
 
 ![image](https://user-images.githubusercontent.com/62529025/125549850-40fd3099-76eb-48da-b5de-db371c321a4e.png)
 
-4. If you want to show what command that can be used on this server you need to issue `!deploy` command first like below on your discord server
+4. If you want to show the slash command that can be used on this server you need to issue `!deploy` command first, see below for example:
 
 ![command](https://i.gyazo.com/d31b846559c8f8c89c786f40cb370108.gif)
 
@@ -98,7 +98,7 @@ and then after that if you see your discord server your bot is now online which 
 
 ![image](https://i.gyazo.com/c2a4055a68a1e6bf8fc4b34fe159a15e.gif)
 
-6. if you click on `COMMAND LIST` button basically you will go to a blank page in `http://localhost:3000`
+6. if you click on `COMMAND LIST` button basically you will go to a blank page in `http://localhost:3000/commands`
 
 ![image](https://user-images.githubusercontent.com/62529025/125551416-8f7d55c5-a90b-4e3e-840b-7d0238fc4e9e.png)
 
@@ -114,7 +114,7 @@ npm run dev
 
 ![image](https://user-images.githubusercontent.com/62529025/125551586-a26aff62-8678-434e-b316-770021512389.png)
 
-9. now you can edit the code whatever you like it, because this discord bot is using typescript easily see the type and some of the desciprtion of what particular command does.
+9. now you can edit the code whatever you like it, because this discord bot is using typescript,you can easily see the type and some of the desciprtion of what particular command does.
 
 # Run the discord server bot in vps
 
