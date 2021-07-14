@@ -3,5 +3,5 @@ WORKDIR /usr/yourapplication-name
 COPY package.json .
 RUN yarn install --frozen-lockfile
 COPY . .
-RUN yarn build
+RUN npx tsc
 CMD ["node", "./dist/index.js"]
