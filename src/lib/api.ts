@@ -184,7 +184,7 @@ export class Api {
 
     return validatorSet.has(pubkey) ? validatorSet.get(pubkey) : {};
   }
-  public async getValidatorProfileUrl(identity){
+  public async getValidatorProfileUrl(identity:any){
     if (identity.length == 16){
         let response = await axios.get(`https://keybase.io/_/api/1.0/user/lookup.json?key_suffix=${identity}&fields=pictures`)
         if (response.status == 200) {
