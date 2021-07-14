@@ -33,7 +33,7 @@ client.on("message", async (message: Message) => {
     message.content.toLowerCase() === "!deploy" &&
     message?.member?.permissions.has("ADMINISTRATOR")
   ) {
-    await client.guilds.cache.get(message.guild.id)?.commands.set(commandList);
+    await client.guilds.cache.get((message?.guild?.id as any))?.commands.set(commandList);
     (client.channels.cache.get(message.channel.id) as TextChannel).send(
       "command has been deployed"
     );
@@ -43,22 +43,22 @@ client.on("message", async (message: Message) => {
     message?.member?.permissions.has("ADMINISTRATOR")
   ) {
     await client.guilds.cache
-      .get(message.guild.id)
+      .get((message?.guild?.id as any))
       ?.commands.set([]);
-    if (periodic.has(message.guild.id)) {
-      if (periodic.get(message.guild.id).size > 0) {
-        const channel = Array.from(periodic.get(message.guild.id).keys());
+    if (periodic.has(message?.guild?.id)) {
+      if (periodic.get(message?.guild?.id).size > 0) {
+        const channel = Array.from(periodic.get(message?.guild?.id).keys());
         if (channel.length > 0) {
           for (const a in channel) {
             const data = Array.from(
-              periodic.get(message.guild.id).get(channel[a]).keys()
+              periodic.get(message?.guild?.id).get(channel[a]).keys()
             );
             if (data.length > 0) {
               for (const b in data) {
                 clearInterval(
-                  periodic.get(message.guild.id).get(channel[a]).get(data[b])
+                  periodic.get(message?.guild?.id).get(channel[a]).get(data[b])
                 );
-                periodic.get(message.guild.id).get(channel[a]).delete(data[b]);
+                periodic.get(message?.guild?.id).get(channel[a]).delete(data[b]);
               }
             }
           }
