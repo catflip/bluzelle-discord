@@ -1,4 +1,7 @@
 {
+  "ts-node": {
+    "files": true
+  },
   "compilerOptions": {
     "strict": true,
     "moduleResolution": "node",
@@ -13,5 +16,6 @@
     "skipDefaultLibCheck": true,
     "outDir": "./dist"
   },
+  
   "exclude": ["discord-page"]
 }

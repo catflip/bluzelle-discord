@@ -115,13 +115,18 @@ client.on("interaction", async (interaction) => {
       const dataSwitchUpdate = interaction?.options?.get("data")?.value;
       const timeUpdate = interaction?.options?.get("time")?.value;
       const perUpdate = interaction?.options?.get("per")?.value;
+      if(Number(perUpdate)<=1)return await interaction.reply({
+        content:
+          "please set time more than 1 second",
+        ephemeral: true,
+      });
       updateScheduling(
         periodic,
         dataSwitchUpdate as any,
         client,
         interaction,
-        (timeUpdate as number),
-        (perUpdate as string)
+        (timeUpdate as string),
+        (perUpdate as number)
       );
       break;
     case "set":
@@ -136,13 +141,18 @@ client.on("interaction", async (interaction) => {
       const dataSwitch = interaction?.options?.get("data")?.value;
       const timeSet = interaction?.options?.get("time")?.value;
       const perSet = interaction?.options?.get("per")?.value;
+      if(Number(perSet)<=1)return await interaction.reply({
+        content:
+          "please set time more than 1 second",
+        ephemeral: true,
+      });
       setScheduling(
         periodic,
         dataSwitch as any,
         client,
         interaction,
-        (timeSet as number),
-        (perSet as string)
+        (timeSet as string),
+        (perSet as number)
       );
 
       break;

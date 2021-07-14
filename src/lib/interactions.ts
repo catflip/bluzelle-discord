@@ -477,23 +477,23 @@ export async function setScheduling(
   dataSwitch: string | number | boolean,
   client: Client,
   interaction: CommandInteraction,
-  time: number,
-  per: string
+  time: string,
+  per: number
 ) {
   let milisecond;
 
-  switch (per) {
-    case "daily":
-      milisecond = time * 86400000;
+  switch (time) {
+    case "day":
+      milisecond = per * 86400000;
       break;
     case "hour":
-      milisecond = time * 3600000;
+      milisecond = per * 3600000;
       break;
     case "minute":
-      milisecond = time * 60000;
+      milisecond = per * 60000;
       break;
     case "second":
-      milisecond = time * 1000;
+      milisecond = per * 1000;
       break;
   }
   if (
@@ -505,7 +505,7 @@ export async function setScheduling(
       .has(dataSwitch)
   ) {
     return await interaction.reply({
-      content: `${dataSwitch} has been set, please use **/update** to update the time`,
+      content: `${dataSwitch} has been set , please use **/update** to update the time`,
       ephemeral: true,
     });
   }
@@ -525,7 +525,7 @@ export async function setScheduling(
     );
 
   await interaction.reply({
-    content: `${dataSwitch} has been set, please use **/update** to update the time and **/stop** to stop the data`,
+    content: `${dataSwitch} has been set to send every ${per} ${time}, please use **/update** to update the time and **/stop** to stop the data`,
     ephemeral: true,
   });
 }
@@ -570,23 +570,23 @@ export async function updateScheduling(
   dataSwitch: string | number | boolean,
   client: Client,
   interaction: CommandInteraction,
-  time: number,
-  per: string
+  time: string,
+  per: number
 ) {
   let milisecond;
 
-  switch (per) {
-    case "daily":
-      milisecond = time * 86400000;
+  switch (time) {
+    case "day":
+      milisecond = per * 86400000;
       break;
     case "hour":
-      milisecond = time * 3600000;
+      milisecond = per * 3600000;
       break;
     case "minute":
-      milisecond = time * 60000;
+      milisecond = per * 60000;
       break;
     case "second":
-      milisecond = time * 1000;
+      milisecond = per * 1000;
       break;
   }
   if (
@@ -614,7 +614,7 @@ export async function updateScheduling(
         scheduling(client, interaction, milisecond as any, dataSwitch)
       );
     await interaction.reply({
-      content: `${dataSwitch} has been updated`,
+      content: `${dataSwitch} has been updated, to send every ${per} ${time}`,
       ephemeral: true,
     });
   } else {

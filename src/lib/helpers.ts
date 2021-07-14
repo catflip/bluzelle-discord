@@ -35,14 +35,14 @@ const dataOptions = {
     },
   ],
 };
-const timeOptions = {
-  name: "time",
+const perOptions = {
+  name: "per",
   description: "how many times the data will be send",
   type: 4,
   required: true,
 };
-const perOptions = {
-  name: "per",
+const timeOptions = {
+  name: "time",
   description: "what time should the data be send",
   type: 3,
   required: true,
@@ -60,8 +60,8 @@ const perOptions = {
       value: "hour",
     },
     {
-      name: "daily",
-      value: "daily",
+      name: "day",
+      value: "day",
     }
   ],
 };
@@ -112,12 +112,12 @@ export const commandList = [
   {
     name: "set",
     description: "send data periodically to channel (ADMIN ONLY)",
-    options: [dataOptions, timeOptions,perOptions],
+    options: [dataOptions,perOptions,timeOptions ],
   },
   {
     name: "update",
     description: "send data periodically to channel (ADMIN ONLY)",
-    options: [dataOptions, timeOptions,perOptions],
+    options: [dataOptions,perOptions,timeOptions ],
   },
   {
     name: "stop",

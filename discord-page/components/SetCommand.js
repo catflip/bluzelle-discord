@@ -12,10 +12,10 @@ const description=<>
      <b>total blocks</b>, <b>block-times</b> , <b>consensus-state</b>, <b>online-voting-power</b>, <b>latest-block</b> ,<b>market-data</b> 
   </li>
   <li>
-    <b>- time [number]</b> how many times you want to send the data example 1,5,10
+    <b>- per [number]</b> time interval of how long the data should be send example 1,5,10
   </li>
   <li>
-    <b>- per [string]</b> time period example second, minute, hour, daily
+    <b>- time [string]</b> time period the options are <b>second</b>, <b>minute</b>, <b>hour</b>, <b>day</b>
   </li>
 </ol>
 </>;
@@ -23,13 +23,13 @@ export const SetCommand=()=>{
     return (   <CardCommand
         anything={
           <DiscordMessages>
-            <DiscordMessage author="admin">/set data:total-validator time:2 per:second</DiscordMessage>
+            <DiscordMessage author="admin">/set data:total-validator time:2 per:day</DiscordMessage>
             <DiscordMessage
               author="bluzelle"
               bot={true}
               avatar={`https://pbs.twimg.com/profile_images/1397885651547090944/yG9RdL1B_400x400.jpg`}
             >
-              total-validator has been set, please use <b>/update</b> to update the time and <b>/stop</b> to stop the data
+             total-validator has been set to send every 2 day, please use <b>/update</b> to update the time and <b>/stop</b> to stop the data
             </DiscordMessage>
           </DiscordMessages>
         }
