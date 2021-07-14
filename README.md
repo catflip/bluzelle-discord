@@ -1,6 +1,21 @@
+# List of content
+
+1. [Description](#bluzelle-discord-bot)
+2. [Website](#website)
+3. [Video Tutorial](#video-tutorial)
+4. [How to create a bot](#how-to-create-bot)
+5. [Tutorial to setup local development](#tutorial-to-setup-local-development)
+6. [Run the discord server bot in vps](#run-the-discord-server-bot-in-vps)
+
+
+
 # Bluzelle Discord Bot
 
 This is a discord server bot that you can use to get data from bluzelle network currently all data is still using testnet as you can see on the big dipper of testnet itself [here](https://bigdipper.testnet.private.bluzelle.com/), this application consist of two application at once, which then can be use easily using docker compose in your own vps.
+
+# Website
+
+http://bluzelle-discord.rino.world
 
 # Video Tutorial
 
@@ -109,10 +124,21 @@ npm run dev
 git clone https://github.com/spiritbro1/bluzelle-discord.git
 cd bluzelle-discord
 sudo su
-bash build.sh
+```
+2. run this command `cp .env.example .env` to create an `.env` file
+3. edit this `.env` file just like you edit it in local the different is you should add the `WEBSITE` variable with the domain that goes to your ip address or just use your ip address, so the `WEBSITE` environment variable will be like this `http://<your ip address>` or `http://<your domain name>`
+
+```
+DISCORD_TOKEN= # same as in local dev
+DISCORD_TOKEN= # same as in local dev
+WEBSITE=# http://<your domain or ip address> for example http://bluzelle-discord.com or http://61.22.22.21
 ```
 
-2. wait for it to complete after it complete go to your vps ip address and you will see the exact same frontend that you get via local development you will also need to issue a `!deploy` command in your discord server in order for you to use the slash command
+4.then run `bash build.sh` wait for it to complete after it complete go to your vps ip address or domain name and you will see the exact same frontend that you get via local development you will also need to issue a `!deploy` command in your discord server in order for you to use the slash command
+
+# Contributing
+
+feel free to create a pull request if you had any new ideas
 
 
 
