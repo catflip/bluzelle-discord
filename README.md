@@ -134,7 +134,7 @@ DISCORD_TOKEN= # same as in local dev
 WEBSITE=# http://<your domain or ip address> for example http://bluzelle-discord.com or http://61.22.22.21
 ```
 
-4.then run `bash build.sh` wait for it to complete after it complete go to your vps ip address or domain name and you will see the exact same frontend that you get via local development you will also need to issue a `!deploy` command in your discord server in order for you to use the slash command
+4. then run `bash build.sh` wait for it to complete after it complete go to your vps ip address or domain name and you will see the exact same frontend that you get via local development you will also need to issue a `!deploy` command in your discord server in order for you to use the slash command
 
 # Contributing
 
