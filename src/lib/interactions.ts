@@ -291,7 +291,7 @@ export async function onlineVotingPowerEmbed() {
 export async function consensusStateEmbed() {
   const api = new Api();
 
-  const { votingHeight, votingRound, votingStep, proposer, votedPower, image } =
+  const { votingHeight, votingRound, votingStep, proposer, votedPower, image }:any =
     await api.getConsensusState();
   const embed = {
     color: 0x0099ff,
