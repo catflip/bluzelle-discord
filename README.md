@@ -13,9 +13,7 @@
 
 This is a discord server bot that you can use to get data from bluzelle network easily, currently all data is still using testnet, you can see all of the data of bluzelle in  big dipper of testnet itself [here](https://bigdipper.testnet.private.bluzelle.com/), this application consist of two application at once, frontend and backend which then can be use easily using docker compose in your own vps.
 
-# Website
 
-http://bluzelle-discord.rino.world
 
 # Video Tutorial
 
