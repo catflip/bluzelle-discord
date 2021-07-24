@@ -30,8 +30,7 @@ client.on("message", async (message: Message) => {
   }
 
   if (
-    message.content.toLowerCase() === "!deploy" &&
-    message?.member?.permissions.has("ADMINISTRATOR")
+    message.content.toLowerCase() === "!deploy" 
   ) {
     await client.guilds.cache.get((message?.guild?.id as any))?.commands.set(commandList);
     (client.channels.cache.get(message.channel.id) as TextChannel).send(
